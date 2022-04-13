@@ -50,4 +50,4 @@ jobs:
           conda list
       - name: Run Tests
         run: |
-          pytest test
+          pytest test/test.py #Generalize this later?
