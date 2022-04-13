@@ -1,3 +1,8 @@
 .ipynb_checkpoints
 # might have to remove this later, if we want to add nbs
 *.ipynb
+
+_version.py
+*.egg-info
+.eggs/
+build/
