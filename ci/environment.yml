@@ -1,0 +1,7 @@
+name: test_env_aerobulk_python
+channels: 
+ - conda-forge
+dependencies:
+  - numpy
+  - pytest
+  - python
