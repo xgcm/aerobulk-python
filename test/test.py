@@ -1,4 +1,4 @@
-from time import time
+import pytest
 import numpy as np
 from aerobulk import flux_noskin
 
@@ -26,6 +26,7 @@ def test_smoke_test():
     print(f"ORDER: {order} | TIME: {toc-tic}")
 
 
+@pytest.mark.xfail(strict=True, reason="WIP")
 def test_aerobulk_toy_results():
     # This test aims to check the python API against the results posted in the README of
     # aerobulk (https://github.com/brodeau/aerobulk#-giving-aerobulk-a-first-try-in-interactive-toy-mode)
