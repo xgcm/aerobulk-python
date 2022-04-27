@@ -1,6 +1,6 @@
 from time import time
 import numpy as np
-import aerobulk.mod_aerobulk_wrap as aero
+from aerobulk import flux_noskin
 
 
 def test_smoke_test():
@@ -14,19 +14,13 @@ def test_smoke_test():
     order = "F"
     jt = 1
     nt = 1
-    calgo = "andreas"
-    zt = 10.0
-    zu = 10.0
     sst = np.full(shape, 290.0, order=order)
     t_zt = np.full(shape, 290.0, order=order)
     hum_zt = np.full(shape, 0.001, order=order)
     u_zu = np.full(shape, 1.0, order=order)
     v_zu = np.full(shape, -1.0, order=order)
     slp = np.full(shape, 101000.0, order=order)
-    niter = 15  # make optional
     tic = time()
-    ql, qh, tau_x, tau_y, evap = aero.mod_aerobulk_wrapper.aerobulk_model_noskin(
-        calgo, zt, zu, sst, t_zt, hum_zt, u_zu, v_zu, slp, niter
-    )
+    ql, qh, tau_x, tau_y, evap = flux_noskin(sst, t_zt, hum_zt, u_zu, v_zu, slp)
     toc = time()
     print(f"ORDER: {order} | TIME: {toc-tic}")
