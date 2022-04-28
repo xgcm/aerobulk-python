@@ -1,3 +1,3 @@
-[submodule "src/aerobulk"]
-	path = src/aerobulk
+[submodule "source/fortran/aerobulk"]
+	path = source/fortran/aerobulk
 	url = git@github.com:brodeau/aerobulk.git

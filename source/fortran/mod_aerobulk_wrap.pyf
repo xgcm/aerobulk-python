@@ -1,7 +1,7 @@
 !    -*- f90 -*-
 ! Note: the context of this file is case sensitive.
 
-python module mod_aerobulk_wrap ! in 
+python module mod_aerobulk_wrap ! in
     interface  ! in :mod_aerobulk_wrap
         module mod_aerobulk_wrapper ! in :mod_aerobulk_wrap:mod_aerobulk_wrap.f90
             use mod_const
@@ -28,7 +28,7 @@ python module mod_aerobulk_wrap ! in
                 real(kind=8) dimension(ni,nj,nt),intent(out),depend(nj,ni,nt) :: evap
             end subroutine aerobulk_model_noskin
         end module mod_aerobulk_wrapper
-    end interface 
+    end interface
 end python module mod_aerobulk_wrap
 
 ! This file was auto-generated with f2py (version:1.22.3).
