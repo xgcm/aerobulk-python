@@ -1,4 +1,3 @@
-import numpy as np
 import aerobulk.aerobulk.mod_aerobulk_wrap as aero
 
 

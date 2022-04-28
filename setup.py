@@ -1,8 +1,7 @@
 import os
 
-from setuptools import find_packages  # , setup
-from numpy.distutils.core import setup, Extension
-from numpy.distutils.fcompiler import get_default_fcompiler, CompilerNotFound
+from numpy.distutils.core import Extension, setup
+from numpy.distutils.fcompiler import get_default_fcompiler
 
 here = os.path.dirname(__file__)
 with open(os.path.join(here, "README.md"), encoding="utf-8") as f:
@@ -32,7 +31,7 @@ f90flags.append("-w")
 # for this API we will only expose a single extension?
 ext_modules = [
     Extension(
-        name="mod_aerobulk_wrap",  # this somehow needs to match the mod_aerobulk_wrap.* files. Ideally I would like to name this just aerobulk (for later.)
+        name="mod_aerobulk_wrap",
         sources=[
             "./source/fortran/aerobulk/src/mod_const.f90",
             "./source/fortran/aerobulk/src/mod_phymbl.f90",
@@ -55,25 +54,24 @@ ext_modules = [
     )
 ]
 
-
-## Lets populate the commented inputs after this is working
 setup(
     name="aerobulk-python",
     description="General Circulation Model Postprocessing with xarray",
     url="https://github.com/xgcm/aerobulk-python",
     author="aerobulk-python Developers",
     author_email="julius@ldeo.columbia.edu",
-    # license="GPLv3",
-    # classifiers=[
-    #     "Development Status :: 2 - Pre-Alpha",
-    #     "Intended Audience :: Science/Research",
-    #     "Topic :: Scientific/Engineering",
-    #     "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
-    #     "Operating System :: OS Independent",
-    #     "Programming Language :: Python :: 3.7",
-    #     "Programming Language :: Python :: 3.8",
-    #     "Programming Language :: Python :: 3.9",
-    # ],
+    license="GPLv3",
+    classifiers=[
+        "Development Status :: 2 - Pre-Alpha",
+        "Intended Audience :: Science/Research",
+        "Topic :: Scientific/Engineering",
+        "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+        "Operating System :: OS Independent",
+        "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
+    ],
     install_requires=install_requires,
     python_requires=">=3.7",
     # long_description=long_description,
@@ -85,7 +83,6 @@ setup(
         "tag_regex": r"^(?P<prefix>v)?(?P<version>[^\+]+)(?P<suffix>.*)?$",
     },
     package_dir={"": "source"},
-    # packages=find_packages(exclude=["docs", "tests", "tests.*", "docs.*"]),
     packages=["aerobulk"],
     ext_package="aerobulk.aerobulk",
     ext_modules=ext_modules,

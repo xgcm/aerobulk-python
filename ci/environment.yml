@@ -1,5 +1,5 @@
 name: test_env_aerobulk_python
-channels: 
+channels:
  - conda-forge
 dependencies:
   - dask
