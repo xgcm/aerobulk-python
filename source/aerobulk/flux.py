@@ -15,6 +15,9 @@ def flux_noskin(
     hum_zt = np.atleast_2d(hum_zt)
     u_zu = np.atleast_2d(u_zu)
     v_zu = np.atleast_2d(v_zu)
+    print(sst)
+    print(sst.shape)
+    print("----------")
 
     return aero.mod_aerobulk_wrapper.aerobulk_model_noskin(
         algo, zt, zu, sst, t_zt, hum_zt, u_zu, v_zu, slp, niter
