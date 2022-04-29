@@ -8,9 +8,19 @@ MODULE mod_aerobulk_wrapper
 
   PRIVATE
 
-  PUBLIC :: AEROBULK_MODEL_NOSKIN
+  PUBLIC :: AEROBULK_MODEL_NOSKIN, foo2
 
 CONTAINS
+
+  subroutine foo2(a)
+    integer a
+    if (a.gt.10) then
+      print*, "Fortran: a>10 is bad, stopping here."
+      call f2pystop(10) ! f2pystop must raise an exception that will trigger a long jump to the corresponding wrapper function
+      stop (10)
+    end if
+    print*,"Fortran foo: a<=10 is good, continue."
+  end subroutine foo2
 
   SUBROUTINE AEROBULK_MODEL_NOSKIN( Ni, Nj, Nt,          &
      &                       calgo, zt, zu, sst, t_zt,   &

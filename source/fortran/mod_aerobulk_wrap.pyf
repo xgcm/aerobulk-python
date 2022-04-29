@@ -7,6 +7,13 @@ python module mod_aerobulk_wrap ! in
             use mod_const
             use mod_aerobulk, only: aerobulk_init,aerobulk_bye
             use mod_aerobulk_compute
+            subroutine foo2(a) ! in :m2:foo.f90
+                integer :: a
+                intent (callback) f2pystop
+                external f2pystop
+                integer status
+                call f2pystop(status)
+            end subroutine foo2
             subroutine aerobulk_model_noskin(ni,nj,nt,calgo,zt,zu,sst,t_zt,hum_zt,u_zu,v_zu,slp,niter,ql,qh,tau_x,tau_y,evap) ! in :mod_aerobulk_wrap:mod_aerobulk_wrap.f90:mod_aerobulk_wrapper
                 integer, optional,intent(in),check(shape(sst, 0) == ni),depend(sst) :: ni=shape(sst, 0)
                 integer, optional,intent(in),check(shape(sst, 1) == nj),depend(sst) :: nj=shape(sst, 1)

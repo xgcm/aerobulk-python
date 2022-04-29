@@ -1,4 +1,5 @@
 import numpy as np
+import pytest
 from aerobulk import flux_noskin
 
 
@@ -18,3 +19,9 @@ def test_smoke_test():
     v_zu = np.full(shape, -1.0, order=order)
     slp = np.full(shape, 101000.0, order=order)
     flux_noskin(sst, t_zt, hum_zt, u_zu, v_zu, slp)
+
+
+def test_error_handling():
+    with pytest.raises(ValueError, match="the whole domain is masked!"):
+        # wrong sst unit
+        flux_noskin(20, 280.1, 0.001, 1.0, -1.0)
