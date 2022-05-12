@@ -1,63 +1,6 @@
-import aerobulk.aerobulk.mod_aerobulk_wrap as aero
 import numpy as np
 import xarray as xr
 from aerobulk import flux_noskin
-
-# flux_noskin(sst, t_zt, hum_zt, u_zu, v_zu, slp)
-
-
-# shape = (200, 200, 10)
-
-
-def test_shape(shape):
-    print("LESSSSS GOOOO")
-    order = "F"
-
-    sst = np.full(shape, 290.0, order=order)
-    t_zt = np.full(shape, 280.0, order=order)
-    hum_zt = np.full(shape, 0.001, order=order)
-    u_zu = np.full(shape, 1.0, order=order)
-    v_zu = np.full(shape, -1.0, order=order)
-    slp = np.full(shape, 101000.0, order=order)
-
-    algo = "coare3p0"
-    zt = (10,)
-    zu = (2,)
-    niter = 4
-
-    ql, qh, tau_x, tau_y, evap = aero.mod_aerobulk_wrapper.aerobulk_model_noskin(
-        algo,
-        zt,
-        zu,
-        sst,
-        t_zt,
-        hum_zt,
-        u_zu,
-        v_zu,
-        slp,
-        niter,
-    )
-    print(f"original:{shape} | output:{ql.shape}")
-    # print("ql", ql.shape)
-    # print("qh", qh.shape)
-    # print("tau_x", tau_x.shape)
-    # print("tau_y", tau_y.shape)
-    # print("evap", evap.shape)
-
-    # for sh in [
-    # (200, 200, 10),  # original:(200, 200, 10) | output:(200, 200, 10)
-    # (200, 200, 1),  # original:(200, 200, 1) | output:(200, 200, 1)
-    # (200, 200),  # original:(200, 200) | output:(200, 200, 1)
-    # (200),  # original:200 | output:(200, 1, 1)
-    # (),  # original:() | output:(1, 1, 1)
-    # (200, 200, 10, 4),  # ValueError: too many axes: 4 (effrank=4), expected rank=3
-    # (200, 200, 0),  # ValueError: unexpected array size: new_size=40000, got array with arr_size=0
-    # (200, 0, 3), #ValueError: unexpected array size: new_size=40000, got array with arr_size=0
-    (1, 1, 1),  # original:(1, 1, 1) | output:(1, 1, 1)
-
-
-# ]:
-#    test_shape(sh)
 
 
 def flux_xr(
@@ -68,6 +11,7 @@ def flux_xr(
     sst, t_zt, hum_zt, u_zu, v_zu, slp = xr.broadcast(
         sst, t_zt, hum_zt, u_zu, v_zu, slp
     )
+    print("slp", slp)
 
     if len(sst.dims) < 3:
         # TODO promote using expand_dims?
@@ -86,13 +30,17 @@ def flux_xr(
         slp,
         input_core_dims=[()] * 6,
         output_core_dims=[()] * 5,
-        # TODO dask="parallelized"
+        # input_core_dims=[("dim_0", "dim_1", "dim_2")] * 6,
+        # output_core_dims=[("dim_0", "dim_1", "dim_2")] * 5,
+        dask="parallelized",
         kwargs=dict(
             algo=algo,
             zt=zt,
             zu=zu,
             niter=niter,
         ),
+        output_dtypes=[sst.dtype]
+        * 5,  # deactivates the 1 element check which aerobulk does not like
     )
 
     if not isinstance(out_vars, tuple) or len(out_vars) != 5:
@@ -111,12 +59,25 @@ def flux_xr(
 for shape in [(200, 200, 10)]:
     print("Yihawww")
     order = "F"
-    sst = xr.DataArray(np.full(shape, 290.0, order=order))
-    t_zt = xr.DataArray(np.full(shape, 280.0, order=order))
-    hum_zt = xr.DataArray(np.full(shape, 0.001, order=order))
-    u_zu = xr.DataArray(np.full(shape, 1.0, order=order))
-    v_zu = xr.DataArray(np.full(shape, -1.0, order=order))
-    slp = xr.DataArray(np.full(shape, 101000.0, order=order))
+    sst = xr.DataArray(np.full(shape, 290.0, order=order)).chunk(
+        {"dim_0": 10, "dim_2": 10}
+    )
+    t_zt = xr.DataArray(np.full(shape, 280.0, order=order)).chunk(
+        {"dim_0": 10, "dim_2": 10}
+    )
+    hum_zt = xr.DataArray(np.full(shape, 0.001, order=order)).chunk(
+        {"dim_0": 10, "dim_2": 10}
+    )
+    u_zu = xr.DataArray(np.full(shape, 1.0, order=order)).chunk(
+        {"dim_0": 10, "dim_2": 10}
+    )
+    v_zu = xr.DataArray(np.full(shape, -1.0, order=order)).chunk(
+        {"dim_0": 10, "dim_2": 10}
+    )
+    slp = xr.DataArray(np.full(shape, 101000.0, order=order)).chunk(
+        {"dim_0": 10, "dim_2": 10}
+    )
+    print(slp.chunks)
 
     ql, qh, tau_x, tau_y, evap = flux_xr(sst, t_zt, hum_zt, u_zu, v_zu, slp)
 
@@ -125,3 +86,9 @@ for shape in [(200, 200, 10)]:
     print(f"tau_x: {tau_x.shape}")
     print(f"tau_y: {tau_y.shape}")
     print(f"evap: {evap.shape}")
+
+    print(f"ql: {ql.load()}")
+    print(f"qh: {qh.load()}")
+    print(f"tau_x: {tau_x.load()}")
+    print(f"tau_y: {tau_y.load()}")
+    print(f"evap: {evap.load()}")
