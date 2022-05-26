@@ -4,7 +4,6 @@ import numpy as np
 
 def test_shape(shape):
 
-    print("LESSSSS GOOOO")
     order = "F"
 
     sst = np.full(shape, 290.0, order=order)
