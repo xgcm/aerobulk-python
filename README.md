@@ -72,10 +72,10 @@ I was able to run one of the binaries with `bin/example_call_aerobulk.x`
 <details><summary>Output</summary>
 ```
 *********** COARE 3.0 *****************
- 
+
  ===================================================================
                     ----- AeroBulk_init -----
- 
+
      *** Bulk parameterization to be used => "coare3p0"
         ==> will use the Cool-skin & Warm-ayer scheme of `coare3p0` !
      *** Computational domain shape: Ni x Nj = 00002 x 00001
@@ -88,16 +88,16 @@ I was able to run one of the binaries with `bin/example_call_aerobulk.x`
  ===================================================================
                     ----- AeroBulk_bye -----
  ===================================================================
- 
- 
+
+
  ---------------------------------------------------------------------
-     Parameter           | Unstable ASL |  Stable ASL  | units 
+     Parameter           | Unstable ASL |  Stable ASL  | units
  ---------------------------------------------------------------------
   Wind speed at zu       =   5.00000000       5.00000000      m/s
      SST                 =   22.0000000       22.0000000      deg.C
   Abs. temperature at zt =   20.0000000       25.0000000      deg.C
   Pot. temperature at zt =   20.0134144       25.0150242      deg.C
- 
+
   Sensible heat flux: QH =  -15.1545086       17.8423691      W/m**2
    Latent  heat flux: QL =  -81.3846741      -50.8408585      W/m**2
    Evaporation:     Evap =  -2.87061906      -1.79333246      mm/day
@@ -105,14 +105,14 @@ I was able to run one of the binaries with `bin/example_call_aerobulk.x`
   Tau_x                  =   3.57834995E-02   1.73626728E-02  N/m**2
   Tau_y                  =   0.00000000       0.00000000      N/m**2
   Tau                    =   3.57834995E-02   1.73626728E-02  N/m**2
- 
- 
- 
+
+
+
   *********** COARE 3.6 *****************
- 
+
  ===================================================================
                     ----- AeroBulk_init -----
- 
+
      *** Bulk parameterization to be used => "coare3p6"
         ==> will use the Cool-skin & Warm-ayer scheme of `coare3p6` !
      *** Computational domain shape: Ni x Nj = 00002 x 00001
@@ -125,16 +125,16 @@ I was able to run one of the binaries with `bin/example_call_aerobulk.x`
  ===================================================================
                     ----- AeroBulk_bye -----
  ===================================================================
- 
- 
+
+
  ---------------------------------------------------------------------
-     Parameter           | Unstable ASL |  Stable ASL  | units 
+     Parameter           | Unstable ASL |  Stable ASL  | units
  ---------------------------------------------------------------------
   Wind speed at zu       =   5.00000000       5.00000000      m/s
      SST                 =   22.0000000       22.0000000      deg.C
   Abs. temperature at zt =   20.0000000       25.0000000      deg.C
   Pot. temperature at zt =   20.0134144       25.0150242      deg.C
- 
+
   Sensible heat flux: QH =  -15.3865499       17.0818920      W/m**2
    Latent  heat flux: QL =  -83.0788422      -48.4459152      W/m**2
    Evaporation:     Evap =  -2.93033028      -1.70883954      mm/day
@@ -142,14 +142,14 @@ I was able to run one of the binaries with `bin/example_call_aerobulk.x`
   Tau_x                  =   3.21817845E-02   1.51577257E-02  N/m**2
   Tau_y                  =   0.00000000       0.00000000      N/m**2
   Tau                    =   3.21817845E-02   1.51577257E-02  N/m**2
- 
- 
- 
+
+
+
   *********** ECMWF *****************
- 
+
  ===================================================================
                     ----- AeroBulk_init -----
- 
+
      *** Bulk parameterization to be used => "ecmwf"
         ==> will use the Cool-skin & Warm-ayer scheme of `ecmwf` !
      *** Computational domain shape: Ni x Nj = 00002 x 00001
@@ -162,16 +162,16 @@ I was able to run one of the binaries with `bin/example_call_aerobulk.x`
  ===================================================================
                     ----- AeroBulk_bye -----
  ===================================================================
- 
- 
+
+
  ---------------------------------------------------------------------
-     Parameter           | Unstable ASL |  Stable ASL  | units 
+     Parameter           | Unstable ASL |  Stable ASL  | units
  ---------------------------------------------------------------------
   Wind speed at zu       =   5.00000000       5.00000000      m/s
      SST                 =   22.0000000       22.0000000      deg.C
   Abs. temperature at zt =   20.0000000       25.0000000      deg.C
   Pot. temperature at zt =   20.0134144       25.0150242      deg.C
- 
+
   Sensible heat flux: QH =  -14.3822346       17.6531811      W/m**2
    Latent  heat flux: QL =  -80.2958984      -52.4623947      W/m**2
    Evaporation:     Evap =  -2.83224440      -1.85053933      mm/day
@@ -179,14 +179,14 @@ I was able to run one of the binaries with `bin/example_call_aerobulk.x`
   Tau_x                  =   3.84389125E-02   1.93256922E-02  N/m**2
   Tau_y                  =   0.00000000       0.00000000      N/m**2
   Tau                    =   3.84389125E-02   1.93256922E-02  N/m**2
- 
- 
- 
+
+
+
   *********** NCAR *****************
- 
+
  ===================================================================
                     ----- AeroBulk_init -----
- 
+
      *** Bulk parameterization to be used => "ncar"
      *** Cool-skin & Warm-layer schemes will NOT be used!
      *** Computational domain shape: Ni x Nj = 00002 x 00001
@@ -199,30 +199,30 @@ I was able to run one of the binaries with `bin/example_call_aerobulk.x`
  ===================================================================
                     ----- AeroBulk_bye -----
  ===================================================================
- 
- 
+
+
  ---------------------------------------------------------------------
-     Parameter           | Unstable ASL |  Stable ASL  | units 
+     Parameter           | Unstable ASL |  Stable ASL  | units
  ---------------------------------------------------------------------
   Wind speed at zu       =   5.00000000       5.00000000      m/s
      SST                 =   22.0000000       22.0000000      deg.C
   Abs. temperature at zt =   20.0000000       25.0000000      deg.C
   Pot. temperature at zt =   20.0134144       25.0150242      deg.C
- 
+
   Sensible heat flux: QH =  -16.6969528       10.7261686      W/m**2
    Latent  heat flux: QL =  -88.4781876      -71.9012222      W/m**2
    Evaporation:     Evap =  -3.12166286      -2.53679895      mm/day
   Tau_x                  =   3.58519591E-02   2.77329944E-02  N/m**2
   Tau_y                  =   0.00000000       0.00000000      N/m**2
   Tau                    =   3.58519591E-02   2.77329944E-02  N/m**2
- 
- 
- 
+
+
+
   *********** ANDREAS *****************
- 
+
  ===================================================================
                     ----- AeroBulk_init -----
- 
+
      *** Bulk parameterization to be used => "andreas"
      *** Cool-skin & Warm-layer schemes will NOT be used!
      *** Computational domain shape: Ni x Nj = 00002 x 00001
@@ -235,16 +235,16 @@ I was able to run one of the binaries with `bin/example_call_aerobulk.x`
  ===================================================================
                     ----- AeroBulk_bye -----
  ===================================================================
- 
- 
+
+
  ---------------------------------------------------------------------
-     Parameter           | Unstable ASL |  Stable ASL  | units 
+     Parameter           | Unstable ASL |  Stable ASL  | units
  ---------------------------------------------------------------------
   Wind speed at zu       =   5.00000000       5.00000000      m/s
      SST                 =   22.0000000       22.0000000      deg.C
   Abs. temperature at zt =   20.0000000       25.0000000      deg.C
   Pot. temperature at zt =   20.0134144       25.0150242      deg.C
- 
+
   Sensible heat flux: QH =  -14.4129944       15.1970539      W/m**2
    Latent  heat flux: QL =  -74.4637756      -51.7018318      W/m**2
    Evaporation:     Evap =  -2.62721038      -1.82412970      mm/day
