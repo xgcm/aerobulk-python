@@ -27,7 +27,7 @@ CONTAINS
 
     INTEGER n
 
-    nb_iter = Nt
+    nb_iter = Niter
 
     !! initialize based on first timestep
     CALL AEROBULK_INIT(Nt, calgo, sst(:, :, 1), t_zt(:, :, 1), &
