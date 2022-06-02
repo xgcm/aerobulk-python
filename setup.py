@@ -1,7 +1,16 @@
 import os
 
+# We need to import setuptools here in order for it to persist in sys.modules.
+# Its presence/absence is used in subclassing setup in numpy/distutils/core.py.
+# However, we need to run the distutils version of sdist, so import that first
+# so that it is in sys.modules
+import numpy.distutils.command.sdist  # noqa
+import setuptools  # noqa
 from numpy.distutils.core import Extension, setup
 from numpy.distutils.fcompiler import get_default_fcompiler
+
+# Trying this from the numpy setup.py
+
 
 here = os.path.dirname(__file__)
 with open(os.path.join(here, "README.md"), encoding="utf-8") as f:
