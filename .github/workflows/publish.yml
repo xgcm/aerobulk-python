@@ -24,6 +24,8 @@ jobs:
         run: python setup.py --version
       - name: Build tarball
         run: python setup.py sdist
+      - name: Check dist
+        run: ls -la dist
       - name: Check built artifacts
         run: |
           python -m twine check dist/*
