@@ -7,3 +7,6 @@ _version.py
 .eggs/
 build/
 __pycache__
+mod_aerobulk_wrap.*.so
+source/fortran/mod_aerobulk_wrap-f2pywrappers2.f90
+source/fortran/mod_aerobulk_wrapmodule.c
