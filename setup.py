@@ -1,5 +1,5 @@
 import os
-
+import versioneer
 from numpy.distutils.core import Extension, setup
 from numpy.distutils.fcompiler import get_default_fcompiler
 
@@ -75,12 +75,8 @@ setup(
     python_requires=">=3.8",
     # long_description=long_description,
     # long_description_content_type="text/x-rst",
-    setup_requires="setuptools_scm",
-    use_scm_version={
-        "write_to": "source/aerobulk/_version.py",
-        "write_to_template": '__version__ = "{version}"',
-        "tag_regex": r"^(?P<prefix>v)?(?P<version>[^\+]+)(?P<suffix>.*)?$",
-    },
+    version=versioneer.get_version(),
+    cmdclass=versioneer.get_cmdclass(),
     package_dir={"": "source"},
     packages=["aerobulk"],
     ext_package="aerobulk.aerobulk",
