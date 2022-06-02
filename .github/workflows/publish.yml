@@ -22,9 +22,20 @@ jobs:
           pip install numpy setuptools setuptools-scm wheel twine
       - name: Build tarball
         run: python setup.py sdist
+      - name: Check built artifacts
+        run: |
+          python -m twine check dist/*
+          pwd
+          if [ -f dist/aerobulk-python-0.0.0.tar.gz ]; then
+            echo "❌ INVALID VERSION NUMBER"
+            exit 1
+          else
+            echo "✅ Looks good"
+          fi
       - name: Publish a Package to PyPI
         uses: pypa/gh-action-pypi-publish@v1.5.0
         with:
           user: __token__
           password: ${{ secrets.PYPI_API_TOKEN }}
           verbose: true
+          verify_metadata: true
