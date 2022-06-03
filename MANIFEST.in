@@ -1,2 +1,0 @@
-include versioneer.py
-include source/aerobulk/_version.py
