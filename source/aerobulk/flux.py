@@ -10,7 +10,7 @@ def _check_algo(algo, valids):
 
 
 def flux_noskin(
-    sst, t_zt, hum_zt, u_zu, v_zu, slp=101000.0, algo="coare3p0", zt=10, zu=2, niter=1
+    sst, t_zt, hum_zt, u_zu, v_zu, slp=101000.0, algo="coare3p0", zt=10, zu=2, niter=6
 ):
     """Python wrapper for aerobulk without skin correction.
     !ATTENTION If input not provided in correct units, will crash.
@@ -79,7 +79,7 @@ def flux_skin(
     algo="coare3p0",
     zt=10,
     zu=2,
-    niter=1,
+    niter=6,
 ):
     """Python wrapper for aerobulk with skin correction.
     !ATTENTION If input not provided in correct units, will crash.
