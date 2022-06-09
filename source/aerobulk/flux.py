@@ -101,11 +101,6 @@ def skin_np(
     zt,
     zu,
     niter,
-    # slp=101000.0,
-    # algo="coare3p0",
-    # zt=10,
-    # zu=2,
-    # niter=1,
 ):
     """Python wrapper for aerobulk with skin correction.
     !ATTENTION If input not provided in correct units, will crash.
@@ -161,6 +156,8 @@ def skin_np(
     evap : array_like
         evaporation         [mm/s] aka [kg/m^2/s] (usually <0, as ocean loses water!)
     """
+    for arg in [sst, t_zt, hum_zt, u_zu, v_zu, rad_sw, rad_lw, slp]:
+        _check_shape(arg)
 
     ql, qh, taux, tauy, t_s, evap = aero.mod_aerobulk_wrapper.aerobulk_model_skin(
         algo, zt, zu, sst, t_zt, hum_zt, u_zu, v_zu, slp, rad_sw, rad_lw, niter
@@ -233,10 +230,11 @@ def skin(
     niter=6,
 ):
 
+    print(algo)
     _check_algo(algo, VALID_ALGOS_SKIN)
 
-    sst, t_zt, hum_zt, u_zu, v_zu, slp, rad_sw, rad_lw = xr.broadcast(
-        sst, t_zt, hum_zt, u_zu, v_zu, slp, rad_sw, rad_lw
+    sst, t_zt, hum_zt, u_zu, v_zu, rad_sw, rad_lw, slp = xr.broadcast(
+        sst, t_zt, hum_zt, u_zu, v_zu, rad_sw, rad_lw, slp
     )
 
     if len(sst.dims) < 3:
@@ -269,7 +267,7 @@ def skin(
         * 6,  # deactivates the 1 element check which aerobulk does not like
     )
 
-    if not isinstance(out_vars, tuple) or len(out_vars) != 5:
+    if not isinstance(out_vars, tuple) or len(out_vars) != 6:
         raise TypeError("F2Py returned unexpected types")
 
     if any(var.ndim != 3 for var in out_vars):
@@ -278,5 +276,4 @@ def skin(
         )
 
     # TODO if dimensions promoted squeeze them out before returning
-
     return out_vars  # currently returns only 3D arrays
