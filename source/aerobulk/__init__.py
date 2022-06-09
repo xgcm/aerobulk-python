@@ -6,4 +6,4 @@ except PackageNotFoundError:
     __version__ = "unknown"
     pass
 
-from .flux import flux_noskin, flux_noskin_xr
+from .flux import noskin, skin
