@@ -1,7 +1,6 @@
 import numpy as np
 import pytest
-from aerobulk import flux_noskin, flux_skin
-from aerobulk.flux import VALID_ALGOS, VALID_ALGOS_SKIN
+from aerobulk.flux import VALID_ALGOS, VALID_ALGOS_SKIN, noskin_np, skin_np
 
 
 @pytest.mark.parametrize(
@@ -24,7 +23,10 @@ def test_smoke_noskin(algo):
     u_zu = np.full(shape, 1.0, order=order)
     v_zu = np.full(shape, -1.0, order=order)
     slp = np.full(shape, 101000.0, order=order)
-    flux_noskin(sst, t_zt, hum_zt, u_zu, v_zu, slp, algo=algo)
+    zt = 10
+    zu = 2
+    niter = 6
+    noskin(sst, t_zt, hum_zt, u_zu, v_zu, slp, algo, zt, zu, niter)
 
 
 @pytest.mark.parametrize(
@@ -52,4 +54,7 @@ def test_smoke_skin(algo):
     rad_sw = np.full(shape, 0.0, order=order)
     rad_lw = np.full(shape, 350.0, order=order)
     slp = np.full(shape, 101000.0, order=order)
-    flux_skin(sst, t_zt, hum_zt, u_zu, v_zu, rad_sw, rad_lw, slp, algo=algo)
+    zt = 10
+    zu = 2
+    niter = 6
+    skin(sst, t_zt, hum_zt, u_zu, v_zu, rad_sw, rad_lw, slp, algo, zt, zu, niter)

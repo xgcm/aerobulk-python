@@ -1,6 +1,6 @@
 import numpy as np
 import xarray as xr
-from aerobulk import flux_noskin
+from aerobulk import noskin_np
 
 
 def flux_xr(
@@ -21,7 +21,7 @@ def flux_xr(
         raise NotImplementedError
 
     out_vars = xr.apply_ufunc(
-        flux_noskin,
+        noskin_np,
         sst,
         t_zt,
         hum_zt,

@@ -23,10 +23,10 @@ def noskin_np(
     u_zu,
     v_zu,
     slp,
-    algo=None,
-    zt=None,
-    zu=None,
-    niter=None,
+    algo,
+    zt,
+    zu,
+    niter,
 ):
     """Python wrapper for aerobulk without skin correction.
     !ATTENTION If input not provided in correct units, will crash.
@@ -82,8 +82,6 @@ def noskin_np(
     for arg in [sst, t_zt, hum_zt, u_zu, v_zu, slp]:
         _check_shape(arg)
 
-    _check_algo(algo, VALID_ALGOS)
-
     ql, qh, taux, tauy, evap = aero.mod_aerobulk_wrapper.aerobulk_model_noskin(
         algo, zt, zu, sst, t_zt, hum_zt, u_zu, v_zu, slp, niter
     )
@@ -98,11 +96,16 @@ def skin_np(
     v_zu,
     rad_sw,
     rad_lw,
-    slp=101000.0,
-    algo="coare3p0",
-    zt=10,
-    zu=2,
-    niter=1,
+    slp,
+    algo,
+    zt,
+    zu,
+    niter,
+    # slp=101000.0,
+    # algo="coare3p0",
+    # zt=10,
+    # zu=2,
+    # niter=1,
 ):
     """Python wrapper for aerobulk with skin correction.
     !ATTENTION If input not provided in correct units, will crash.
@@ -158,7 +161,6 @@ def skin_np(
     evap : array_like
         evaporation         [mm/s] aka [kg/m^2/s] (usually <0, as ocean loses water!)
     """
-    _check_algo(algo, VALID_ALGOS_SKIN)
 
     ql, qh, taux, tauy, t_s, evap = aero.mod_aerobulk_wrapper.aerobulk_model_skin(
         algo, zt, zu, sst, t_zt, hum_zt, u_zu, v_zu, slp, rad_sw, rad_lw, niter
@@ -166,15 +168,14 @@ def skin_np(
     return ql, qh, taux, tauy, t_s, evap
 
 
-def flux_noskin_xr(
-    sst, t_zt, hum_zt, u_zu, v_zu, slp=101000.0, algo="coare3p0", zt=10, zu=2, niter=1
+def noskin(
+    sst, t_zt, hum_zt, u_zu, v_zu, slp=101000.0, algo="coare3p0", zt=10, zu=2, niter=6
 ):
-    # TODO do we need to make the "time" dimension special?
+    _check_algo(algo, VALID_ALGOS)
 
     sst, t_zt, hum_zt, u_zu, v_zu, slp = xr.broadcast(
         sst, t_zt, hum_zt, u_zu, v_zu, slp
     )
-    print("slp", slp)
 
     if len(sst.dims) < 3:
         # TODO promote using expand_dims?
@@ -193,8 +194,6 @@ def flux_noskin_xr(
         slp,
         input_core_dims=[()] * 6,
         output_core_dims=[()] * 5,
-        # input_core_dims=[("dim_0", "dim_1", "dim_2")] * 6,
-        # output_core_dims=[("dim_0", "dim_1", "dim_2")] * 5,
         dask="parallelized",
         kwargs=dict(
             algo=algo,
@@ -204,6 +203,70 @@ def flux_noskin_xr(
         ),
         output_dtypes=[sst.dtype]
         * 5,  # deactivates the 1 element check which aerobulk does not like
+    )
+
+    if not isinstance(out_vars, tuple) or len(out_vars) != 5:
+        raise TypeError("F2Py returned unexpected types")
+
+    if any(var.ndim != 3 for var in out_vars):
+        raise ValueError(
+            f"f2py returned result of unexpected shape. Got {[var.shape for var in out_vars]}"
+        )
+
+    # TODO if dimensions promoted squeeze them out before returning
+
+    return out_vars  # currently returns only 3D arrays
+
+
+def skin(
+    sst,
+    t_zt,
+    hum_zt,
+    u_zu,
+    v_zu,
+    rad_sw,
+    rad_lw,
+    slp=101000.0,
+    algo="coare3p0",
+    zt=10,
+    zu=2,
+    niter=6,
+):
+
+    _check_algo(algo, VALID_ALGOS_SKIN)
+
+    sst, t_zt, hum_zt, u_zu, v_zu, slp, rad_sw, rad_lw = xr.broadcast(
+        sst, t_zt, hum_zt, u_zu, v_zu, slp, rad_sw, rad_lw
+    )
+
+    if len(sst.dims) < 3:
+        # TODO promote using expand_dims?
+        raise NotImplementedError
+    if len(sst.dims) > 4:
+        # TODO iterate over extra dims? Or reshape?
+        raise NotImplementedError
+
+    out_vars = xr.apply_ufunc(
+        skin_np,
+        sst,
+        t_zt,
+        hum_zt,
+        u_zu,
+        v_zu,
+        rad_sw,
+        rad_lw,
+        slp,
+        input_core_dims=[()] * 8,
+        output_core_dims=[()] * 6,
+        dask="parallelized",
+        kwargs=dict(
+            algo=algo,
+            zt=zt,
+            zu=zu,
+            niter=niter,
+        ),
+        output_dtypes=[sst.dtype]
+        * 6,  # deactivates the 1 element check which aerobulk does not like
     )
 
     if not isinstance(out_vars, tuple) or len(out_vars) != 5:
