@@ -1,4 +1,3 @@
-"""Tests for the xarray wrapper"""
 from typing import Dict
 
 import numpy as np
@@ -6,9 +5,11 @@ import pytest
 import xarray as xr
 from aerobulk import noskin, skin
 
+"""Tests for the xarray wrapper"""
+
 
 def create_data(shape: tuple, chunks: Dict[str, int] = {}, skin_correction=False):
-    def _arr(value):
+    def _arr(value, chunks):
         order = "F"  # Does this matter for the results?
         arr = xr.DataArray(np.full(shape, value, order=order))
 
@@ -16,19 +17,18 @@ def create_data(shape: tuple, chunks: Dict[str, int] = {}, skin_correction=False
         randomize_factor = 0.001
         randomize_range = value * randomize_factor
         arr = arr + np.random.rand(*shape) + randomize_range
-
         if chunks:
             arr = arr.chunk(chunks)
         return arr
 
-    sst = _arr(290.0)
-    t_zt = _arr(280.0)
-    hum_zt = _arr(0.001)
-    u_zu = _arr(1.0)
-    v_zu = _arr(-1.0)
-    slp = _arr(101000.0)
-    rad_sw = _arr(0.000001)
-    rad_lw = _arr(350)
+    sst = _arr(290.0, chunks)
+    t_zt = _arr(280.0, chunks)
+    hum_zt = _arr(0.001, chunks)
+    u_zu = _arr(1.0, chunks)
+    v_zu = _arr(-1.0, chunks)
+    slp = _arr(101000.0, chunks)
+    rad_sw = _arr(0.000001, chunks)
+    rad_lw = _arr(350, chunks)
     if skin_correction:
         return sst, t_zt, hum_zt, u_zu, v_zu, rad_sw, rad_lw, slp
     else:
@@ -51,45 +51,42 @@ def test_algo_error_skin(algo):
         skin(*args, algo=algo)
 
 
-# @pytest.mark.parametrize("chunks", [{"dim_2": -1}, {"dim_0": 10}, {"dim_2": 10}])
-# @pytest.mark.parametrize("skin_correction", [True, False])
-# def test_chunked(chunks, skin_correction):
-#     skin_correction = True
-#     shape = (10, 13, 12)
-#     args = create_data(shape, chunks=chunks, skin_correction=skin_correction)
-
-#     if skin_correction:
-#         func = skin
-#     else:
-#         func = noskin
-#     out_vars_chunked = func(*args)
-#     out_vars_nochunks = func(*(a.load() for a in args))
-
-#     for out_chunk, out_nochunk in zip(out_vars_chunked, out_vars_nochunks):
-#         assert out_chunk.shape == shape
-#         xr.testing.assert_allclose(out_chunk, out_nochunk)
-
-
+@pytest.mark.parametrize("chunks", [{"dim_2": -1}, {"dim_0": 10}, {"dim_2": 10}])
 @pytest.mark.parametrize("skin_correction", [True, False])
-# @pytest.mark.parametrize("skin_correction", [False, True])
-def test_transpose_invariance(skin_correction):
-    shape = (10, 13, 12)
-    args = create_data(shape, chunks=None, skin_correction=skin_correction)
-    if skin_correction:
-        func = skin
-    else:
-        func = noskin
+class Test_xarray:
+    def test_chunked_noskin(self, chunks, skin_correction):
+        shape = (10, 13, 12)
+        args = create_data(shape, chunks=chunks, skin_correction=skin_correction)
+        if skin_correction:
+            func = skin
+        else:
+            func = noskin
+        out_vars_chunked = func(*args)
+        out_vars_nochunks = func(*(a.load() for a in args))
 
-    out_vars_012 = func(*(a.transpose("dim_0", "dim_1", "dim_2") for a in args))
-    out_vars_210 = func(*(a.transpose("dim_2", "dim_1", "dim_0") for a in args))
-    out_vars_120 = func(*(a.transpose("dim_1", "dim_2", "dim_0") for a in args))
+        for out_chunk, out_nochunk in zip(out_vars_chunked, out_vars_nochunks):
+            assert out_chunk.shape == shape
+            xr.testing.assert_allclose(out_chunk, out_nochunk)
 
-    for i, ii, iii in zip(out_vars_012, out_vars_120, out_vars_210):
-        xr.testing.assert_allclose(
-            i.transpose("dim_0", "dim_1", "dim_2"),
-            ii.transpose("dim_0", "dim_1", "dim_2"),
-        )
-        xr.testing.assert_allclose(
-            ii.transpose("dim_0", "dim_1", "dim_2"),
-            iii.transpose("dim_0", "dim_1", "dim_2"),
-        )
+    def test_transpose_invariance_noskin(self, chunks, skin_correction):
+        shape = (10, 13, 12)
+        chunks = {"dim_0": 10}
+        args = create_data(shape, chunks=chunks, skin_correction=skin_correction)
+        if skin_correction:
+            func = skin
+        else:
+            func = noskin
+
+        out_vars_012 = func(*(a.transpose("dim_0", "dim_1", "dim_2") for a in args))
+        out_vars_210 = func(*(a.transpose("dim_2", "dim_1", "dim_0") for a in args))
+        out_vars_120 = func(*(a.transpose("dim_1", "dim_2", "dim_0") for a in args))
+
+        for i, ii, iii in zip(out_vars_012, out_vars_120, out_vars_210):
+            xr.testing.assert_allclose(
+                i.transpose("dim_0", "dim_1", "dim_2"),
+                ii.transpose("dim_0", "dim_1", "dim_2"),
+            )
+            xr.testing.assert_allclose(
+                ii.transpose("dim_0", "dim_1", "dim_2"),
+                iii.transpose("dim_0", "dim_1", "dim_2"),
+            )

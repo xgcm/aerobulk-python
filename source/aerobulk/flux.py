@@ -1,4 +1,5 @@
-import aerobulk.aerobulk.mod_aerobulk_wrap as aero
+import aerobulk.aerobulk.mod_aerobulk_wrap_noskin as aeronoskin
+import aerobulk.aerobulk.mod_aerobulk_wrap_skin as aeroskin
 import xarray as xr
 
 
@@ -82,7 +83,13 @@ def noskin_np(
     for arg in [sst, t_zt, hum_zt, u_zu, v_zu, slp]:
         _check_shape(arg)
 
-    ql, qh, taux, tauy, evap = aero.mod_aerobulk_wrapper.aerobulk_model_noskin(
+    (
+        ql,
+        qh,
+        taux,
+        tauy,
+        evap,
+    ) = aeronoskin.mod_aerobulk_wrapper_noskin.aerobulk_model_noskin(
         algo, zt, zu, sst, t_zt, hum_zt, u_zu, v_zu, slp, niter
     )
     return ql, qh, taux, tauy, evap
@@ -159,7 +166,14 @@ def skin_np(
     for arg in [sst, t_zt, hum_zt, u_zu, v_zu, rad_sw, rad_lw, slp]:
         _check_shape(arg)
 
-    ql, qh, taux, tauy, t_s, evap = aero.mod_aerobulk_wrapper.aerobulk_model_skin(
+    (
+        ql,
+        qh,
+        taux,
+        tauy,
+        t_s,
+        evap,
+    ) = aeroskin.mod_aerobulk_wrapper_skin.aerobulk_model_skin(
         algo, zt, zu, sst, t_zt, hum_zt, u_zu, v_zu, slp, rad_sw, rad_lw, niter
     )
     return ql, qh, taux, tauy, t_s, evap
