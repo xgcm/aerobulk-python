@@ -34,47 +34,43 @@ def noskin_np(
 
     Parameters
     ----------
-    sst : array_like
+    sst : numpy.array
         Bulk sea surface temperature [K]
-    t_zt : array_like
+    t_zt : numpy.array
         Absolute air temperature at height zt [K]
-    hum_zt : array_like
+    hum_zt : numpy.array
         air humidity at zt, can be given as:
             - specific humidity                   [kg/kg]
             - dew-point temperature                   [K]
             - relative humidity                       [%]
             => type should normally be recognized based on value range
-    u_zu : array_like
+    u_zu : numpy.array
         zonal wind speed at zu                    [m/s]
-    v_zu : array_like
+    v_zu : numpy.array
         meridional wind speed at zu               [m/s]
-    slp : array_like, optional
+    slp : numpy.array, optional
         mean sea-level pressure                   [Pa] ~101000 Pa,
         by default 101000.0
-    algo : str, optional
+    algo : str
         Algorithm, can be one of: "coare3p0", "coare3p6", "ecmwf", "ncar", "andreas",
-        by default "coare3p0"
-    zt : int, optional
+    zt : int
         height for temperature and spec. hum. of air           [m],
-        by default 10
-    zu : int, optional
+    zu : int
         height for wind (10m = traditional anemometric height  [m],
-        by default 2
-    niter : int, optional
+    niter : int
         Number of iteration steps used in the algorithm,
-        by default 1
 
     Returns
     -------
-    ql : array_like
+    ql : numpy.array
         Latent heat flux                                     [W/m^2]
-    qh : array_like
+    qh : numpy.array
         Sensible heat flux                                   [W/m^2]
-    taux : array_like
+    taux : numpy.array
         zonal wind stress                                    [N/m^2]
-    tauy : array_like
+    tauy : numpy.array
         meridional wind stress                                    [N/m^2]
-    evap : array_like
+    evap : numpy.array
         evaporation         [mm/s] aka [kg/m^2/s] (usually <0, as ocean loses water!)
     """
 
@@ -114,53 +110,49 @@ def skin_np(
 
     Parameters
     ----------
-    sst : array_like
+    sst : numpy.array
         Bulk sea surface temperature [K]
-    t_zt : array_like
+    t_zt : numpy.array
         Absolute air temperature at height zt [K]
-    hum_zt : array_like
+    hum_zt : numpy.array
         air humidity at zt, can be given as:
             - specific humidity                   [kg/kg]
             - dew-point temperature                   [K]
             - relative humidity                       [%]
             => type should normally be recognized based on value range
-    u_zu : array_like
+    u_zu : numpy.array
         zonal wind speed at zu                    [m/s]
-    v_zu : array_like
+    v_zu : numpy.array
         meridional wind speed at zu               [m/s]
-    rad_sw : array_like
+    rad_sw : numpy.array
         downwelling shortwave radiation at the surface (>0)   [W/m^2]
-    rad_lw : array_like
+    rad_lw : numpy.array
         rad_lw : downwelling longwave radiation at the surface  (>0)   [W/m^2]
-    slp : array_like, optional
+    slp : numpy.array, optional
         mean sea-level pressure                   [Pa] ~101000 Pa,
         by default 101000.0
-    algo : str, optional
+    algo : str
         Algorithm, can be one of: "coare3p0", "coare3p6", "ecmwf",
-        by default "coare3p0"
-    zt : int, optional
+    zt : int
         height for temperature and spec. hum. of air           [m],
-        by default 10
-    zu : int, optional
+    zu : int
         height for wind (10m = traditional anemometric height  [m],
-        by default 2
-    niter : int, optional
+    niter : int
         Number of iteration steps used in the algorithm,
-        by default 1
 
     Returns
     -------
-    ql : array_like
+    ql : numpy.array
         Latent heat flux                                     [W/m^2]
-    qh : array_like
+    qh : numpy.array
         Sensible heat flux                                   [W/m^2]
-    taux : array_like
+    taux : numpy.array
         zonal wind stress                                    [N/m^2]
-    tauy : array_like
+    tauy : numpy.array
         meridional wind stress                                    [N/m^2]
-    t_s : array_like
+    t_s : numpy.array
         skin temperature    [K]    (only when l_use_skin_schemes=TRUE)
-    evap : array_like
+    evap : numpy.array
         evaporation         [mm/s] aka [kg/m^2/s] (usually <0, as ocean loses water!)
     """
     for arg in [sst, t_zt, hum_zt, u_zu, v_zu, rad_sw, rad_lw, slp]:
@@ -182,6 +174,54 @@ def skin_np(
 def noskin(
     sst, t_zt, hum_zt, u_zu, v_zu, slp=101000.0, algo="coare3p0", zt=10, zu=2, niter=6
 ):
+    """xarray wrapper for aerobulk without skin correction.
+    !ATTENTION If input not provided in correct units, will crash.
+
+    Parameters
+    ----------
+    sst : xarray.DataArray
+        Bulk sea surface temperature [K]
+    t_zt : xarray.DataArray
+        Absolute air temperature at height zt [K]
+    hum_zt : xarray.DataArray
+        air humidity at zt, can be given as:
+            - specific humidity                   [kg/kg]
+            - dew-point temperature                   [K]
+            - relative humidity                       [%]
+            => type should normally be recognized based on value range
+    u_zu : xarray.DataArray
+        zonal wind speed at zu                    [m/s]
+    v_zu : xarray.DataArray
+        meridional wind speed at zu               [m/s]
+    slp : xarray.DataArray, optional
+        mean sea-level pressure                   [Pa] ~101000 Pa,
+        by default 101000.0
+    algo : str, optional
+        Algorithm, can be one of: "coare3p0", "coare3p6", "ecmwf", "ncar", "andreas",
+        by default "coare3p0"
+    zt : int, optional
+        height for temperature and spec. hum. of air           [m],
+        by default 10
+    zu : int, optional
+        height for wind (10m = traditional anemometric height  [m],
+        by default 2
+    niter : int, optional
+        Number of iteration steps used in the algorithm,
+        by default 6
+
+    Returns
+    -------
+    ql : xarray.DataArray
+        Latent heat flux                                     [W/m^2]
+    qh : xarray.DataArray
+        Sensible heat flux                                   [W/m^2]
+    taux : xarray.DataArray
+        zonal wind stress                                    [N/m^2]
+    tauy : xarray.DataArray
+        meridional wind stress                                    [N/m^2]
+    evap : xarray.DataArray
+        evaporation         [mm/s] aka [kg/m^2/s] (usually <0, as ocean loses water!)
+    """
     _check_algo(algo, VALID_ALGOS)
 
     sst, t_zt, hum_zt, u_zu, v_zu, slp = xr.broadcast(
@@ -243,6 +283,61 @@ def skin(
     zu=2,
     niter=6,
 ):
+
+    """xarray wrapper for aerobulk with skin correction.
+    !ATTENTION If input not provided in correct units, will crash.
+
+    Parameters
+    ----------
+    sst : xr.DataArray
+        Bulk sea surface temperature [K]
+    t_zt : xr.DataArray
+        Absolute air temperature at height zt [K]
+    hum_zt : xr.DataArray
+        air humidity at zt, can be given as:
+            - specific humidity                   [kg/kg]
+            - dew-point temperature                   [K]
+            - relative humidity                       [%]
+            => type should normally be recognized based on value range
+    u_zu : xr.DataArray
+        zonal wind speed at zu                    [m/s]
+    v_zu : xr.DataArray
+        meridional wind speed at zu               [m/s]
+    rad_sw : xr.DataArray
+        downwelling shortwave radiation at the surface (>0)   [W/m^2]
+    rad_lw : xr.DataArray
+        rad_lw : downwelling longwave radiation at the surface  (>0)   [W/m^2]
+    slp : xr.DataArray, optional
+        mean sea-level pressure                   [Pa] ~101000 Pa,
+        by default 101000.0
+    algo : str, optional
+        Algorithm, can be one of: "coare3p0", "coare3p6", "ecmwf",
+        by default "coare3p0"
+    zt : int, optional
+        height for temperature and spec. hum. of air           [m],
+        by default 10
+    zu : int, optional
+        height for wind (10m = traditional anemometric height  [m],
+        by default 2
+    niter : int, optional
+        Number of iteration steps used in the algorithm,
+        by default 6
+
+    Returns
+    -------
+    ql : xr.DataArray
+        Latent heat flux                                     [W/m^2]
+    qh : xr.DataArray
+        Sensible heat flux                                   [W/m^2]
+    taux : xr.DataArray
+        zonal wind stress                                    [N/m^2]
+    tauy : xr.DataArray
+        meridional wind stress                                    [N/m^2]
+    t_s : xr.DataArray
+        skin temperature    [K]    (only when l_use_skin_schemes=TRUE)
+    evap : xr.DataArray
+        evaporation         [mm/s] aka [kg/m^2/s] (usually <0, as ocean loses water!)
+    """
 
     print(algo)
     _check_algo(algo, VALID_ALGOS_SKIN)
