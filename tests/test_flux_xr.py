@@ -70,8 +70,8 @@ def test_algo_error_skin(algo):
 #         xr.testing.assert_allclose(out_chunk, out_nochunk)
 
 
-# @pytest.mark.parametrize("skin_correction", [True, False])
-@pytest.mark.parametrize("skin_correction", [False, True])
+@pytest.mark.parametrize("skin_correction", [True, False])
+# @pytest.mark.parametrize("skin_correction", [False, True])
 def test_transpose_invariance(skin_correction):
     shape = (10, 13, 12)
     args = create_data(shape, chunks=None, skin_correction=skin_correction)
