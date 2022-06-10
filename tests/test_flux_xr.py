@@ -51,30 +51,30 @@ def test_algo_error_skin(algo):
         skin(*args, algo=algo)
 
 
-@pytest.mark.parametrize("chunks", [{"dim_2": -1}, {"dim_0": 10}, {"dim_2": 10}])
-@pytest.mark.parametrize("skin_correction", [True, False])
-def test_chunked(chunks, skin_correction):
-    skin_correction = True
+# @pytest.mark.parametrize("chunks", [{"dim_2": -1}, {"dim_0": 10}, {"dim_2": 10}])
+# @pytest.mark.parametrize("skin_correction", [True, False])
+# def test_chunked(chunks, skin_correction):
+#     skin_correction = True
+#     shape = (10, 13, 12)
+#     args = create_data(shape, chunks=chunks, skin_correction=skin_correction)
+
+#     if skin_correction:
+#         func = skin
+#     else:
+#         func = noskin
+#     out_vars_chunked = func(*args)
+#     out_vars_nochunks = func(*(a.load() for a in args))
+
+#     for out_chunk, out_nochunk in zip(out_vars_chunked, out_vars_nochunks):
+#         assert out_chunk.shape == shape
+#         xr.testing.assert_allclose(out_chunk, out_nochunk)
+
+
+# @pytest.mark.parametrize("skin_correction", [True, False])
+@pytest.mark.parametrize("skin_correction", [False, True])
+def test_transpose_invariance(skin_correction):
     shape = (10, 13, 12)
-    args = create_data(shape, chunks=chunks, skin_correction=skin_correction)
-
-    if skin_correction:
-        func = skin
-    else:
-        func = noskin
-    out_vars_chunked = func(*args)
-    out_vars_nochunks = func(*(a.load() for a in args))
-
-    for out_chunk, out_nochunk in zip(out_vars_chunked, out_vars_nochunks):
-        assert out_chunk.shape == shape
-        xr.testing.assert_allclose(out_chunk, out_nochunk)
-
-
-@pytest.mark.parametrize("chunks", [{"dim_2": -1}, {"dim_0": 10}, {"dim_2": 10}])
-@pytest.mark.parametrize("skin_correction", [True, False])
-def test_transpose_invariance(chunks, skin_correction):
-    shape = (10, 13, 12)
-    args = create_data(shape, chunks=chunks, skin_correction=skin_correction)
+    args = create_data(shape, chunks=None, skin_correction=skin_correction)
     if skin_correction:
         func = skin
     else:
