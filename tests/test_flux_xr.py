@@ -8,7 +8,7 @@ from aerobulk import noskin, skin
 """Tests for the xarray wrapper"""
 
 
-def create_data(shape: tuple, chunks: Dict[str, int] = {}, skin_correction=False):
+def create_data(shape: tuple[int, ...], chunks: Dict[str, int] = {}, skin_correction=False):
     def _arr(value, chunks):
         order = "F"  # Does this matter for the results?
         arr = xr.DataArray(np.full(shape, value, order=order))
