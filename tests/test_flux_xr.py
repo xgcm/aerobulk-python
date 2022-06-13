@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Dict, Tuple
 
 import numpy as np
 import pytest
@@ -9,10 +9,12 @@ from aerobulk import noskin, skin
 
 
 def create_data(
-    shape: tuple[int, ...], chunks: Dict[str, int] = {}, skin_correction=False
+    shape: Tuple[int, ...],
+    chunks: Dict[str, int] = {},
+    skin_correction: bool = False,
+    order: str = "F",
 ):
-    def _arr(value, chunks):
-        order = "F"  # Does this matter for the results?
+    def _arr(value, chunks, order):
         arr = xr.DataArray(np.full(shape, value, order=order))
 
         # adds random noise scaled by a percentage of the value
@@ -23,14 +25,14 @@ def create_data(
             arr = arr.chunk(chunks)
         return arr
 
-    sst = _arr(290.0, chunks)
-    t_zt = _arr(280.0, chunks)
-    hum_zt = _arr(0.001, chunks)
-    u_zu = _arr(1.0, chunks)
-    v_zu = _arr(-1.0, chunks)
-    slp = _arr(101000.0, chunks)
-    rad_sw = _arr(0.000001, chunks)
-    rad_lw = _arr(350, chunks)
+    sst = _arr(290.0, chunks, order)
+    t_zt = _arr(280.0, chunks, order)
+    hum_zt = _arr(0.001, chunks, order)
+    u_zu = _arr(1.0, chunks, order)
+    v_zu = _arr(-1.0, chunks, order)
+    slp = _arr(101000.0, chunks, order)
+    rad_sw = _arr(0.000001, chunks, order)
+    rad_lw = _arr(350, chunks, order)
     if skin_correction:
         return sst, t_zt, hum_zt, u_zu, v_zu, rad_sw, rad_lw, slp
     else:
@@ -56,7 +58,7 @@ def test_algo_error_skin(algo):
 @pytest.mark.parametrize("chunks", [{"dim_2": -1}, {"dim_0": 10}, {"dim_2": 10}])
 @pytest.mark.parametrize("skin_correction", [True, False])
 class Test_xarray:
-    def test_chunked_noskin(self, chunks, skin_correction):
+    def test_chunked(self, chunks, skin_correction):
         shape = (10, 13, 12)
         args = create_data(shape, chunks=chunks, skin_correction=skin_correction)
         if skin_correction:
@@ -70,10 +72,13 @@ class Test_xarray:
             assert out_chunk.shape == shape
             xr.testing.assert_allclose(out_chunk, out_nochunk)
 
-    def test_transpose_invariance_noskin(self, chunks, skin_correction):
+    @pytest.mark.parametrize("order", ["F", "C"])
+    def test_transpose_invariance_noskin(self, chunks, skin_correction, order):
         shape = (10, 13, 12)
         chunks = {"dim_0": 10}
-        args = create_data(shape, chunks=chunks, skin_correction=skin_correction)
+        args = create_data(
+            shape, chunks=chunks, skin_correction=skin_correction, order=order
+        )
         if skin_correction:
             func = skin
         else:

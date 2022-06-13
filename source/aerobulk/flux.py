@@ -1,3 +1,5 @@
+import functools
+
 import aerobulk.aerobulk.mod_aerobulk_wrap_noskin as aeronoskin
 import aerobulk.aerobulk.mod_aerobulk_wrap_skin as aeroskin
 import xarray as xr
@@ -171,10 +173,44 @@ def skin_np(
     return ql, qh, taux, tauy, t_s, evap
 
 
+def input_check(func):
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        # Check the input shape
+        test_arg = args[
+            0
+        ]  # assuming that all the input shapes are the same size. TODO: More thorough check
+        if len(test_arg.dims) < 3:
+            # TODO promote using expand_dims?
+            raise NotImplementedError(
+                f"Aerobulk Python expects all input fields as 3D arrays. Found {len(test_arg.dims)} dimensions on input."
+            )
+        if len(test_arg.dims) > 4:
+            # TODO iterate over extra dims? Or reshape?
+            raise NotImplementedError(
+                f"Aerobulk Python expects all input fields as 3D arrays. Found {len(test_arg.dims)} dimensions on input."
+            )
+
+        out_vars = func(*args, **kwargs)
+        # TODO: Here we could 'un-reshape' or squeeze the output according to the logic above
+
+        if any(var.ndim != 3 for var in out_vars):
+            raise ValueError(
+                f"f2py returned result of unexpected shape. Got {[var.shape for var in out_vars]}"
+            )
+        return out_vars
+
+    return wrapper
+
+
+@input_check
 def noskin(
     sst, t_zt, hum_zt, u_zu, v_zu, slp=101000.0, algo="coare3p0", zt=10, zu=2, niter=6
 ):
     """xarray wrapper for aerobulk without skin correction.
+
+    Warnings
+    --------
     !ATTENTION If input not provided in correct units, will crash.
 
     Parameters
@@ -228,13 +264,6 @@ def noskin(
         sst, t_zt, hum_zt, u_zu, v_zu, slp
     )
 
-    if len(sst.dims) < 3:
-        # TODO promote using expand_dims?
-        raise NotImplementedError
-    if len(sst.dims) > 4:
-        # TODO iterate over extra dims? Or reshape?
-        raise NotImplementedError
-
     out_vars = xr.apply_ufunc(
         noskin_np,
         sst,
@@ -259,16 +288,10 @@ def noskin(
     if not isinstance(out_vars, tuple) or len(out_vars) != 5:
         raise TypeError("F2Py returned unexpected types")
 
-    if any(var.ndim != 3 for var in out_vars):
-        raise ValueError(
-            f"f2py returned result of unexpected shape. Got {[var.shape for var in out_vars]}"
-        )
-
-    # TODO if dimensions promoted squeeze them out before returning
-
-    return out_vars  # currently returns only 3D arrays
+    return out_vars
 
 
+@input_check
 def skin(
     sst,
     t_zt,
@@ -285,6 +308,9 @@ def skin(
 ):
 
     """xarray wrapper for aerobulk with skin correction.
+
+    Warnings
+    --------
     !ATTENTION If input not provided in correct units, will crash.
 
     Parameters
@@ -339,19 +365,11 @@ def skin(
         evaporation         [mm/s] aka [kg/m^2/s] (usually <0, as ocean loses water!)
     """
 
-    print(algo)
     _check_algo(algo, VALID_ALGOS_SKIN)
 
     sst, t_zt, hum_zt, u_zu, v_zu, rad_sw, rad_lw, slp = xr.broadcast(
         sst, t_zt, hum_zt, u_zu, v_zu, rad_sw, rad_lw, slp
     )
-
-    if len(sst.dims) < 3:
-        # TODO promote using expand_dims?
-        raise NotImplementedError
-    if len(sst.dims) > 4:
-        # TODO iterate over extra dims? Or reshape?
-        raise NotImplementedError
 
     out_vars = xr.apply_ufunc(
         skin_np,
@@ -379,10 +397,4 @@ def skin(
     if not isinstance(out_vars, tuple) or len(out_vars) != 6:
         raise TypeError("F2Py returned unexpected types")
 
-    if any(var.ndim != 3 for var in out_vars):
-        raise ValueError(
-            f"f2py returned result of unexpected shape. Got {[var.shape for var in out_vars]}"
-        )
-
-    # TODO if dimensions promoted squeeze them out before returning
-    return out_vars  # currently returns only 3D arrays
+    return out_vars
