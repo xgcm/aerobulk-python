@@ -4,12 +4,6 @@ import aerobulk.aerobulk.mod_aerobulk_wrap_noskin as aeronoskin
 import aerobulk.aerobulk.mod_aerobulk_wrap_skin as aeroskin
 import xarray as xr
 
-
-def _check_shape(arr):
-    if arr.ndim != 3:
-        raise ValueError
-
-
 VALID_ALGOS = ["coare3p0", "coare3p6", "ecmwf", "ncar", "andreas"]
 VALID_ALGOS_SKIN = ["coare3p0", "coare3p6", "ecmwf"]
 
@@ -75,12 +69,6 @@ def noskin_np(
     evap : numpy.array
         evaporation         [mm/s] aka [kg/m^2/s] (usually <0, as ocean loses water!)
     """
-
-    # TODO check if removing default Nones here still passes kwargs down
-
-    for arg in [sst, t_zt, hum_zt, u_zu, v_zu, slp]:
-        _check_shape(arg)
-
     (
         ql,
         qh,
@@ -157,9 +145,6 @@ def skin_np(
     evap : numpy.array
         evaporation         [mm/s] aka [kg/m^2/s] (usually <0, as ocean loses water!)
     """
-    for arg in [sst, t_zt, hum_zt, u_zu, v_zu, rad_sw, rad_lw, slp]:
-        _check_shape(arg)
-
     (
         ql,
         qh,
@@ -183,15 +168,16 @@ def input_check(func):
         if len(test_arg.dims) < 3:
             # TODO promote using expand_dims?
             raise NotImplementedError(
-                f"Aerobulk Python expects all input fields as 3D arrays. Found {len(test_arg.dims)} dimensions on input."
+                f"Aerobulk-Python expects all input fields as 3D arrays. Found {len(test_arg.dims)} dimensions on input."
             )
         if len(test_arg.dims) > 4:
             # TODO iterate over extra dims? Or reshape?
             raise NotImplementedError(
-                f"Aerobulk Python expects all input fields as 3D arrays. Found {len(test_arg.dims)} dimensions on input."
+                f"Aerobulk-Python expects all input fields as 3D arrays. Found {len(test_arg.dims)} dimensions on input."
             )
 
         out_vars = func(*args, **kwargs)
+
         # TODO: Here we could 'un-reshape' or squeeze the output according to the logic above
 
         if any(var.ndim != 3 for var in out_vars):
