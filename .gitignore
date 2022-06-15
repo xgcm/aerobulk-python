@@ -7,6 +7,14 @@ _version.py
 .eggs/
 build/
 __pycache__
+dist/
+
+# files built by f2py
+source/fortran/*f2pywrappers*
+source/fortran/*.c
+source/aerobulk/aerobulk/
 mod_aerobulk_wrap.*.so
-source/fortran/mod_aerobulk_wrap-f2pywrappers2.f90
-source/fortran/mod_aerobulk_wrapmodule.c
+
+# should we ignore submodules
+.DS_Store
+.vscode/

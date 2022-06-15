@@ -1,6 +1,6 @@
 import numpy as np
 import pytest
-from aerobulk import flux_noskin, flux_skin
+from aerobulk.flux import noskin_np, skin_np
 
 
 @pytest.mark.parametrize(
@@ -32,14 +32,14 @@ def test_fortran_noskin(algo, expected):
     # Compare python wrapper output with fortran results from (...)
 
     # inputs are the same for all test cases in the fortran example
-    rt0 = 273.15  # conversion to Kelvin
-    sst = rt0 + 22  # in Kelvin
-    t_zt = rt0 + 20
-    hum_zt = 0.012  # kg/kg
-    u_zu = 5  # m/s
-    v_zu = 0
-    slp = 101000.0  # Pa
-    ql, qh, taux, tauy, evap = flux_noskin(
+    rt0 = np.atleast_3d(273.15)  # conversion to Kelvin
+    sst = np.atleast_3d(rt0 + 22)  # in Kelvin
+    t_zt = np.atleast_3d(rt0 + 20)
+    hum_zt = np.atleast_3d(0.012)  # kg/kg
+    u_zu = np.atleast_3d(5)  # m/s
+    v_zu = np.atleast_3d(0)
+    slp = np.atleast_3d(101000.0)  # Pa
+    ql, qh, taux, tauy, evap = noskin_np(
         sst, t_zt, hum_zt, u_zu, v_zu, slp, algo=algo, zt=2, zu=10, niter=10
     )
     evap = evap * 3600 * 24  # convert to mm/day
@@ -93,16 +93,16 @@ def test_fortran_skin(algo, expected):
     # Compare python wrapper output with fortran results from (...)
 
     # inputs are the same for all test cases in the fortran example
-    rt0 = 273.15  # conversion to Kelvin
-    sst = rt0 + 22  # in Kelvin
-    t_zt = rt0 + 20
-    hum_zt = 0.012  # kg/kg
-    u_zu = 5  # m/s
-    v_zu = 0
-    slp = 101000.0  # Pa
-    rad_sw = 0
-    rad_lw = 350
-    ql, qh, taux, tauy, t_s, evap = flux_skin(
+    rt0 = np.atleast_3d(273.15)  # conversion to Kelvin
+    sst = np.atleast_3d(rt0 + 22)  # in Kelvin
+    t_zt = np.atleast_3d(rt0 + 20)
+    hum_zt = np.atleast_3d(0.012)  # kg/kg
+    u_zu = np.atleast_3d(5)  # m/s
+    v_zu = np.atleast_3d(0)
+    slp = np.atleast_3d(101000.0)  # Pa
+    rad_sw = np.atleast_3d(0)
+    rad_lw = np.atleast_3d(350)
+    ql, qh, taux, tauy, t_s, evap = skin_np(
         sst,
         t_zt,
         hum_zt,

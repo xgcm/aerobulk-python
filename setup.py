@@ -40,7 +40,7 @@ f90flags.append("-w")
 # for this API we will only expose a single extension?
 ext_modules = [
     Extension(
-        name="mod_aerobulk_wrap",
+        name="mod_aerobulk_wrap_noskin",
         sources=[
             "./source/fortran/aerobulk/src/mod_const.f90",
             "./source/fortran/aerobulk/src/mod_phymbl.f90",
@@ -55,12 +55,34 @@ ext_modules = [
             "./source/fortran/aerobulk/src/mod_blk_neutral_10m.f90",
             "./source/fortran/aerobulk/src/mod_aerobulk_compute.f90",
             "./source/fortran/aerobulk/src/mod_aerobulk.f90",
-            "./source/fortran/mod_aerobulk_wrap.f90",
-            "./source/fortran/mod_aerobulk_wrap.pyf",
+            "./source/fortran/mod_aerobulk_wrap_noskin.f90",
+            "./source/fortran/mod_aerobulk_wrap_noskin.pyf",
         ],
         extra_f90_compile_args=f90flags,
         # f2py_options=['--quiet'],
-    )
+    ),
+    Extension(
+        name="mod_aerobulk_wrap_skin",
+        sources=[
+            "./source/fortran/aerobulk/src/mod_const.f90",
+            "./source/fortran/aerobulk/src/mod_phymbl.f90",
+            "./source/fortran/aerobulk/src/mod_skin_coare.f90",
+            "./source/fortran/aerobulk/src/mod_skin_ecmwf.f90",
+            "./source/fortran/aerobulk/src/mod_blk_andreas.f90",
+            "./source/fortran/aerobulk/src/mod_common_coare.f90",
+            "./source/fortran/aerobulk/src/mod_blk_coare3p0.f90",
+            "./source/fortran/aerobulk/src/mod_blk_coare3p6.f90",
+            "./source/fortran/aerobulk/src/mod_blk_ecmwf.f90",
+            "./source/fortran/aerobulk/src/mod_blk_ncar.f90",
+            "./source/fortran/aerobulk/src/mod_blk_neutral_10m.f90",
+            "./source/fortran/aerobulk/src/mod_aerobulk_compute.f90",
+            "./source/fortran/aerobulk/src/mod_aerobulk.f90",
+            "./source/fortran/mod_aerobulk_wrap_skin.f90",
+            "./source/fortran/mod_aerobulk_wrap_skin.pyf",
+        ],
+        extra_f90_compile_args=f90flags,
+        f2py_options=["--quiet"],
+    ),
 ]
 
 setup(

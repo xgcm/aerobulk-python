@@ -1,0 +1,39 @@
+!    -*- f90 -*-
+! Note: the context of this file is case sensitive.
+
+python module mod_aerobulk_wrap_skin ! in
+    interface  ! in :mod_aerobulk_wrap_skin
+        module mod_aerobulk_wrapper_skin ! in :mod_aerobulk_wrap_skin:mod_aerobulk_wrap_skin.f90
+            use mod_const
+            use mod_aerobulk, only: aerobulk_init,aerobulk_bye
+            use mod_aerobulk_compute
+            subroutine aerobulk_model_skin(ni,nj,nt,calgo,zt,zu,sst,t_zt,hum_zt,u_zu,v_zu,slp,rad_sw,rad_lw,niter,ql,qh,tau_x,tau_y,t_s,evap) ! in :mod_aerobulk_wrap_skin:mod_aerobulk_wrap_skin.f90:mod_aerobulk_wrapper_skin
+                integer, optional,intent(in),check(shape(sst, 0) == ni),depend(sst) :: ni=shape(sst, 0)
+                integer, optional,intent(in),check(shape(sst, 1) == nj),depend(sst) :: nj=shape(sst, 1)
+                integer, optional,intent(in),check(shape(sst, 2) == nt),depend(sst) :: nt=shape(sst, 2)
+                character*(*) intent(in) :: calgo
+                real(kind=8) intent(in) :: zt
+                real(kind=8) intent(in) :: zu
+                real(kind=8) dimension(ni,nj,nt),intent(in) :: sst
+                real(kind=8) dimension(ni,nj,nt),intent(in),depend(nj,ni,nt) :: t_zt
+                real(kind=8) dimension(ni,nj,nt),intent(in),depend(nj,ni,nt) :: hum_zt
+                real(kind=8) dimension(ni,nj,nt),intent(in),depend(nj,ni,nt) :: u_zu
+                real(kind=8) dimension(ni,nj,nt),intent(in),depend(nj,ni,nt) :: v_zu
+                real(kind=8) dimension(ni,nj,nt),intent(in),depend(nj,ni,nt) :: slp
+                real(kind=8) dimension(ni,nj,nt),intent(in),depend(nj,ni,nt) :: rad_sw
+                real(kind=8) dimension(ni,nj,nt),intent(in),depend(nj,ni,nt) :: rad_lw
+                integer intent(in) :: niter
+                real(kind=8) dimension(ni,nj,nt),intent(out),depend(nj,ni,nt) :: ql
+                real(kind=8) dimension(ni,nj,nt),intent(out),depend(nj,ni,nt) :: qh
+                real(kind=8) dimension(ni,nj,nt),intent(out),depend(nj,ni,nt) :: tau_x
+                real(kind=8) dimension(ni,nj,nt),intent(out),depend(nj,ni,nt) :: tau_y
+                real(kind=8) dimension(ni,nj,nt),intent(out),depend(nj,ni,nt) :: t_s
+                real(kind=8) dimension(ni,nj,nt),intent(out),depend(nj,ni,nt) :: evap
+            end subroutine aerobulk_model_skin
+        end module mod_aerobulk_wrapper_skin
+    end interface
+end python module mod_aerobulk_wrap_skin
+
+! This file was auto-generated with f2py (version:1.22.3).
+! See:
+! https://web.archive.org/web/20140822061353/http://cens.ioc.ee/projects/f2py2e
