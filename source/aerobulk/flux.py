@@ -158,7 +158,7 @@ def skin_np(
     return ql, qh, taux, tauy, t_s, evap
 
 
-def input_check(func):
+def input_and_output_check(func):
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
         # Check the input shape
@@ -189,7 +189,7 @@ def input_check(func):
     return wrapper
 
 
-@input_check
+@input_and_output_check
 def noskin(
     sst, t_zt, hum_zt, u_zu, v_zu, slp=101000.0, algo="coare3p0", zt=10, zu=2, niter=6
 ):
@@ -277,7 +277,7 @@ def noskin(
     return out_vars
 
 
-@input_check
+@input_and_output_check
 def skin(
     sst,
     t_zt,
