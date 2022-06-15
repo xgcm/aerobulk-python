@@ -197,7 +197,7 @@ def noskin(
 
     Warnings
     --------
-    !ATTENTION If input not provided in correct units, will crash.
+    !ATTENTION If input not provided in the units shown in [] below the code will crash.
 
     Parameters
     ----------
@@ -297,7 +297,7 @@ def skin(
 
     Warnings
     --------
-    !ATTENTION If input not provided in correct units, will crash.
+    !ATTENTION If input not provided in the units shown in [] below the code will crash.
 
     Parameters
     ----------
