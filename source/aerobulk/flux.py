@@ -191,7 +191,7 @@ def input_and_output_check(func):
 
 @input_and_output_check
 def noskin(
-    sst, t_zt, hum_zt, u_zu, v_zu, slp=101000.0, algo="coare3p0", zt=10, zu=2, niter=6
+    sst, t_zt, hum_zt, u_zu, v_zu, slp=101000.0, algo="coare3p0", zt=2, zu=10, niter=6
 ):
     """xarray wrapper for aerobulk without skin correction.
 
@@ -288,8 +288,8 @@ def skin(
     rad_lw,
     slp=101000.0,
     algo="coare3p0",
-    zt=10,
-    zu=2,
+    zt=2,
+    zu=10,
     niter=6,
 ):
 
