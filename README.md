@@ -32,12 +32,16 @@ git clone --recursive git@github.com:xgcm/aerobulk-python.git
     ```
     b. Manual version (you will have to install the python module separately)
     ```
-    python -m numpy.f2py --verbose -c --f90flags="-fdefault-real-8 -ffree-line-length-200 --std=gnu" ./source/fortran/aerobulk/src/mod_const.f90 ./source/fortran/aerobulk/src/mod_phymbl.f90 ./source/fortran/aerobulk/src/mod_skin_coare.f90 ./source/fortran/aerobulk/src/mod_skin_ecmwf.f90 ./source/fortran/aerobulk/src/mod_blk_andreas.f90 ./source/fortran/aerobulk/src/mod_common_coare.f90 ./source/fortran/aerobulk/src/mod_blk_coare3p0.f90 ./source/fortran/aerobulk/src/mod_blk_coare3p6.f90 ./source/fortran/aerobulk/src/mod_blk_ecmwf.f90 ./source/fortran/aerobulk/src/mod_blk_ncar.f90 ./source/fortran/aerobulk/src/mod_blk_neutral_10m.f90 ./source/fortran/aerobulk/src/mod_aerobulk_compute.f90 ./source/fortran/aerobulk/src/mod_aerobulk.f90 ./source/fortran/mod_aerobulk_wrap.f90 ./source/fortran/mod_aerobulk_wrap.pyf
+    python -m numpy.f2py --verbose -c --f90flags="-fdefault-real-8 -ffree-line-length-200 --std=gnu" ./source/fortran/aerobulk/src/mod_const.f90 ./source/fortran/aerobulk/src/mod_phymbl.f90 ./source/fortran/aerobulk/src/mod_skin_coare.f90 ./source/fortran/aerobulk/src/mod_skin_ecmwf.f90 ./source/fortran/aerobulk/src/mod_blk_andreas.f90 ./source/fortran/aerobulk/src/mod_common_coare.f90 ./source/fortran/aerobulk/src/mod_blk_coare3p0.f90 ./source/fortran/aerobulk/src/mod_blk_coare3p6.f90 ./source/fortran/aerobulk/src/mod_blk_ecmwf.f90 ./source/fortran/aerobulk/src/mod_blk_ncar.f90 ./source/fortran/aerobulk/src/mod_blk_neutral_10m.f90 ./source/fortran/aerobulk/src/mod_aerobulk_compute.f90 ./source/fortran/aerobulk/src/mod_aerobulk.f90   ./source/fortran/mod_aerobulk_wrap_skin.f90 ./source/fortran/mod_aerobulk_wrap_skin.pyf
     ```
+    and
 
+    ```
+    python -m numpy.f2py --verbose -c --f90flags="-fdefault-real-8 -ffree-line-length-200 --std=gnu" ./source/fortran/aerobulk/src/mod_const.f90 ./source/fortran/aerobulk/src/mod_phymbl.f90 ./source/fortran/aerobulk/src/mod_skin_coare.f90 ./source/fortran/aerobulk/src/mod_skin_ecmwf.f90 ./source/fortran/aerobulk/src/mod_blk_andreas.f90 ./source/fortran/aerobulk/src/mod_common_coare.f90 ./source/fortran/aerobulk/src/mod_blk_coare3p0.f90 ./source/fortran/aerobulk/src/mod_blk_coare3p6.f90 ./source/fortran/aerobulk/src/mod_blk_ecmwf.f90 ./source/fortran/aerobulk/src/mod_blk_ncar.f90 ./source/fortran/aerobulk/src/mod_blk_neutral_10m.f90 ./source/fortran/aerobulk/src/mod_aerobulk_compute.f90 ./source/fortran/aerobulk/src/mod_aerobulk.f90   ./source/fortran/mod_aerobulk_wrap_noskin.f90 ./source/fortran/mod_aerobulk_wrap_noskin.pyf
+    ```
 4. Make sure things work
 ```
-pytest test/test.py
+pytest tests/test_fortran.py
 ```
 🎉
 
