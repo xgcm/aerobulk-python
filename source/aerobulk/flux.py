@@ -145,8 +145,6 @@ def skin_np(
     evap : numpy.array
         evaporation         [mm/s] aka [kg/m^2/s] (usually <0, as ocean loses water!)
     """
-    print()
-
     (
         ql,
         qh,
