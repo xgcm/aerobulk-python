@@ -29,7 +29,7 @@ CONTAINS
     nb_iter = Niter
     !! All the variables that are set in INIT
     ctype_humidity = 'sh'
-    l_use_skin_schemes = .FALSE.
+    l_use_skin_schemes = .TRUE.
     DO n = 1, Nt
        CALL AEROBULK_COMPUTE(n, calgo, zt, zu, sst(:, :, n), t_zt(:, :, n), &
           &                  hum_zt(:, :, n), U_zu(:, :, n), V_zu(:, :, n), slp(:, :, n),  &
