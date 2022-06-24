@@ -20,7 +20,8 @@ def create_data(
         # adds random noise scaled by a percentage of the value
         randomize_factor = 0.001
         randomize_range = value * randomize_factor
-        arr = arr + np.random.rand(*shape) + randomize_range
+        noise = np.random.rand(*shape) * randomize_range
+        arr = arr + noise
         if chunks:
             arr = arr.chunk(chunks)
         return arr
