@@ -1,0 +1,51 @@
+from typing import Dict, Tuple
+
+import numpy as np
+import xarray as xr
+from numpy.random import default_rng
+
+
+def create_data(
+    shape: Tuple[int, ...],
+    chunks: Dict[str, int] = {},
+    skin_correction: bool = False,
+    order: str = "F",
+    use_xr=True,
+    land_mask=False,
+):
+    size = shape[0] * shape[1]
+    shape2d = (shape[0], shape[1])
+    rng = default_rng()
+    indices = rng.choice(size, size=int(size * 0.3), replace=False)
+    multi_indices = np.unravel_index(indices, shape2d)
+
+    def _arr(value, chunks, order):
+        arr = np.full(shape, value, order=order)
+        if use_xr:
+            arr = xr.DataArray(arr)
+        if land_mask:
+            arr[
+                multi_indices[0], multi_indices[1], :
+            ] = np.nan  # add NaNs to mimic land mask
+        if chunks:
+            arr = arr.chunk(chunks)
+
+        # adds random noise scaled by a percentage of the value
+        randomize_factor = 0.001
+        randomize_range = value * randomize_factor
+        noise = np.random.rand(*shape) * randomize_range
+        arr = arr + noise
+        return arr
+
+    sst = _arr(290.0, chunks, order)
+    t_zt = _arr(280.0, chunks, order)
+    hum_zt = _arr(0.001, chunks, order)
+    u_zu = _arr(1.0, chunks, order)
+    v_zu = _arr(-1.0, chunks, order)
+    slp = _arr(101000.0, chunks, order)
+    rad_sw = _arr(0.000001, chunks, order)
+    rad_lw = _arr(350.0, chunks, order)
+    if skin_correction:
+        return sst, t_zt, hum_zt, u_zu, v_zu, rad_sw, rad_lw, slp
+    else:
+        return sst, t_zt, hum_zt, u_zu, v_zu, slp
