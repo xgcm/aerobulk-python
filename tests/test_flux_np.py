@@ -6,8 +6,20 @@ from create_test_data import create_data
 """Tests for the numpy land_mask wrapper"""
 
 
-@pytest.mark.parametrize("skin_correction", [True, False])
-def test_land_mask(skin_correction):
+@pytest.mark.parametrize(
+    "algo, skin_correction",
+    [
+        ("ecmwf", True),
+        ("ecmwf", False),
+        ("coare3p0", True),
+        ("coare3p0", False),
+        ("coare3p6", True),
+        ("coare3p6", False),
+        ("andreas", False),
+        ("ncar", False),
+    ],
+)
+def test_land_mask(skin_correction, algo):
     shape = (2, 3, 4)
     size = shape[0] * shape[1] * shape[2]
 
@@ -23,7 +35,7 @@ def test_land_mask(skin_correction):
         use_xr=False,
         land_mask=True,
     )
-    out_data = func(*args, "ecmwf", 2, 10, 6)
+    out_data = func(*args, algo, 2, 10, 6)
 
     # Check the location of all NaNs is correct
     for o in out_data:
@@ -35,6 +47,6 @@ def test_land_mask(skin_correction):
         if not np.isnan(out_data[0][index]):
             single_inputs = tuple(np.atleast_3d(i[index]) for i in args)
 
-            single_outputs = func(*single_inputs, "ecmwf", 2, 10, 6)
+            single_outputs = func(*single_inputs, algo, 2, 10, 6)
             for so, o in zip(single_outputs, out_data):
                 assert so == o[index]

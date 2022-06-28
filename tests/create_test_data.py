@@ -21,14 +21,14 @@ def create_data(
 
     def _arr(value, chunks, order):
         arr = np.full(shape, value, order=order)
-        if use_xr:
-            arr = xr.DataArray(arr)
         if land_mask:
             arr[
                 multi_indices[0], multi_indices[1], :
             ] = np.nan  # add NaNs to mimic land mask
-        if chunks:
-            arr = arr.chunk(chunks)
+        if use_xr:
+            arr = xr.DataArray(arr)
+            if chunks:
+                arr = arr.chunk(chunks)
 
         # adds random noise scaled by a percentage of the value
         randomize_factor = 0.001

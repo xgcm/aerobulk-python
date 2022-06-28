@@ -35,6 +35,7 @@ def noskin_np(
 ):
     """Python wrapper for aerobulk without skin correction.
     !ATTENTION If input not provided in correct units, will crash.
+    !ATTENTION Land mask taken from NaN values in sst field. No input variables may have NaN values that are not reflected in the sst.
 
     Parameters
     ----------
@@ -109,6 +110,7 @@ def skin_np(
 ):
     """Python wrapper for aerobulk with skin correction.
     !ATTENTION If input not provided in correct units, will crash.
+    !ATTENTION Land mask taken from NaN values in sst field. No input variables may have NaN values that are not reflected in the sst.
 
     Parameters
     ----------
@@ -213,6 +215,7 @@ def noskin(
     Warnings
     --------
     !ATTENTION If input not provided in the units shown in [] below the code will crash.
+    !ATTENTION Land mask taken from NaN values in sst field. No input variables may have NaN values that are not reflected in the sst.
 
     Parameters
     ----------
@@ -313,6 +316,7 @@ def skin(
     Warnings
     --------
     !ATTENTION If input not provided in the units shown in [] below the code will crash.
+    !ATTENTION Land mask taken from NaN values in sst field. No input variables may have NaN values that are not reflected in the sst.
 
     Parameters
     ----------
