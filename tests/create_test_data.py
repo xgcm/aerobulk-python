@@ -26,7 +26,7 @@ def create_data(
         randomize_range = value * randomize_factor
         noise = np.random.rand(*shape) * randomize_range
         arr = arr + noise
-        
+
         if land_mask:
             arr[
                 multi_indices[0], multi_indices[1], :
