@@ -1,7 +1,6 @@
-import functools
-
 import aerobulk.aerobulk.mod_aerobulk_wrap_noskin as aeronoskin
 import aerobulk.aerobulk.mod_aerobulk_wrap_skin as aeroskin
+import numpy as np
 import xarray as xr
 
 VALID_ALGOS = ["coare3p0", "coare3p6", "ecmwf", "ncar", "andreas"]
@@ -11,6 +10,13 @@ VALID_ALGOS_SKIN = ["coare3p0", "coare3p6", "ecmwf"]
 def _check_algo(algo, valids):
     if algo not in valids:
         raise ValueError(f"Algorithm {algo} not valid. Choose from {valids}.")
+
+
+# Unshrink the data (i.e. put land NaN values back in their correct locations)
+def unshrink_arr(shrunk_array, shape, ocean_index):
+    unshrunk_array = np.full(shape, np.nan)
+    unshrunk_array[ocean_index] = np.squeeze(shrunk_array)
+    return unshrunk_array
 
 
 def noskin_np(
@@ -27,6 +33,7 @@ def noskin_np(
 ):
     """Python wrapper for aerobulk without skin correction.
     !ATTENTION If input not provided in correct units, will crash.
+    !ATTENTION Missing values taken from NaN values in sst field. No input variables may have NaN values that are not reflected in the sst.
 
     Parameters
     ----------
@@ -69,16 +76,20 @@ def noskin_np(
     evap : numpy.array
         evaporation         [mm/s] aka [kg/m^2/s] (usually <0, as ocean loses water!)
     """
-    (
-        ql,
-        qh,
-        taux,
-        tauy,
-        evap,
-    ) = aeronoskin.mod_aerobulk_wrapper_noskin.aerobulk_model_noskin(
-        algo, zt, zu, sst, t_zt, hum_zt, u_zu, v_zu, slp, niter
+
+    # Define the land mask from the native SST land mask
+    ocean_index = np.where(~np.isnan(sst))
+
+    # Shrink the input data (i.e. remove all land points)
+    args_shrunk = tuple(
+        np.atleast_3d(a[ocean_index]) for a in (sst, t_zt, hum_zt, u_zu, v_zu, slp)
     )
-    return ql, qh, taux, tauy, evap
+
+    out_data = aeronoskin.mod_aerobulk_wrapper_noskin.aerobulk_model_noskin(
+        algo, zt, zu, *args_shrunk, niter
+    )
+
+    return tuple(unshrink_arr(o, sst.shape, ocean_index) for o in out_data)
 
 
 def skin_np(
@@ -97,6 +108,7 @@ def skin_np(
 ):
     """Python wrapper for aerobulk with skin correction.
     !ATTENTION If input not provided in correct units, will crash.
+    !ATTENTION Missing values taken from NaN values in sst field. No input variables may have NaN values that are not reflected in the sst.
 
     Parameters
     ----------
@@ -145,51 +157,22 @@ def skin_np(
     evap : numpy.array
         evaporation         [mm/s] aka [kg/m^2/s] (usually <0, as ocean loses water!)
     """
-    (
-        ql,
-        qh,
-        taux,
-        tauy,
-        t_s,
-        evap,
-    ) = aeroskin.mod_aerobulk_wrapper_skin.aerobulk_model_skin(
-        algo, zt, zu, sst, t_zt, hum_zt, u_zu, v_zu, slp, rad_sw, rad_lw, niter
+    # Define the land mask from the native SST land mask
+    ocean_index = np.where(~np.isnan(sst))
+
+    # Shrink the input data (i.e. remove all land points)
+    args_shrunk = tuple(
+        np.atleast_3d(a[ocean_index])
+        for a in (sst, t_zt, hum_zt, u_zu, v_zu, slp, rad_sw, rad_lw)
     )
-    return ql, qh, taux, tauy, t_s, evap
+
+    out_data = aeroskin.mod_aerobulk_wrapper_skin.aerobulk_model_skin(
+        algo, zt, zu, *args_shrunk, niter
+    )
+
+    return tuple(unshrink_arr(o, sst.shape, ocean_index) for o in out_data)
 
 
-def input_and_output_check(func):
-    @functools.wraps(func)
-    def wrapper(*args, **kwargs):
-        # Check the input shape
-        test_arg = args[
-            0
-        ]  # assuming that all the input shapes are the same size. TODO: More thorough check
-        if len(test_arg.dims) < 3:
-            # TODO promote using expand_dims?
-            raise NotImplementedError(
-                f"Aerobulk-Python expects all input fields as 3D arrays. Found {len(test_arg.dims)} dimensions on input."
-            )
-        if len(test_arg.dims) > 4:
-            # TODO iterate over extra dims? Or reshape?
-            raise NotImplementedError(
-                f"Aerobulk-Python expects all input fields as 3D arrays. Found {len(test_arg.dims)} dimensions on input."
-            )
-
-        out_vars = func(*args, **kwargs)
-
-        # TODO: Here we could 'un-reshape' or squeeze the output according to the logic above
-
-        if any(var.ndim != 3 for var in out_vars):
-            raise ValueError(
-                f"f2py returned result of unexpected shape. Got {[var.shape for var in out_vars]}"
-            )
-        return out_vars
-
-    return wrapper
-
-
-@input_and_output_check
 def noskin(
     sst, t_zt, hum_zt, u_zu, v_zu, slp=101000.0, algo="coare3p0", zt=2, zu=10, niter=6
 ):
@@ -198,6 +181,7 @@ def noskin(
     Warnings
     --------
     !ATTENTION If input not provided in the units shown in [] below the code will crash.
+    !ATTENTION Missing values taken from NaN values in sst field. No input variables may have NaN values that are not reflected in the sst.
 
     Parameters
     ----------
@@ -277,7 +261,6 @@ def noskin(
     return out_vars
 
 
-@input_and_output_check
 def skin(
     sst,
     t_zt,
@@ -298,6 +281,7 @@ def skin(
     Warnings
     --------
     !ATTENTION If input not provided in the units shown in [] below the code will crash.
+    !ATTENTION Missing values taken from NaN values in sst field. No input variables may have NaN values that are not reflected in the sst.
 
     Parameters
     ----------
