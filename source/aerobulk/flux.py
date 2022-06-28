@@ -207,10 +207,10 @@ def noskin(
         by default "coare3p0"
     zt : int, optional
         height for temperature and spec. hum. of air           [m],
-        by default 10
+        by default 2
     zu : int, optional
         height for wind (10m = traditional anemometric height  [m],
-        by default 2
+        by default 10
     niter : int, optional
         Number of iteration steps used in the algorithm,
         by default 6
@@ -311,10 +311,10 @@ def skin(
         by default "coare3p0"
     zt : int, optional
         height for temperature and spec. hum. of air           [m],
-        by default 10
+        by default 2
     zu : int, optional
         height for wind (10m = traditional anemometric height  [m],
-        by default 2
+        by default 10
     niter : int, optional
         Number of iteration steps used in the algorithm,
         by default 6
