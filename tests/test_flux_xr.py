@@ -66,3 +66,21 @@ class Test_xarray:
                 ii.transpose("dim_0", "dim_1", "dim_2"),
                 iii.transpose("dim_0", "dim_1", "dim_2"),
             )
+
+
+@pytest.mark.parametrize("skin_correction", [True, False])
+def test_all_input_array_sizes_valid(skin_correction):
+    shapes = (
+        (3, 4),
+        (2, 3, 4),
+        (2, 3, 4, 5),
+    )  # create_data() only allows for inputs of 2 or more dimensions
+    data = (create_data(s, skin_correction=skin_correction) for s in shapes)
+    if skin_correction:
+        func = skin
+    else:
+        func = noskin
+    tuple(func(*d, "coare3p0", 2, 10, 6) for d in data)
+    assert (
+        1 == 1
+    )  # This line is always true, but verifies that the above line doesn't crash the Fortran code

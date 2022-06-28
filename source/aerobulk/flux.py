@@ -1,5 +1,3 @@
-import functools
-
 import aerobulk.aerobulk.mod_aerobulk_wrap_noskin as aeronoskin
 import aerobulk.aerobulk.mod_aerobulk_wrap_skin as aeroskin
 import numpy as np
@@ -175,38 +173,6 @@ def skin_np(
     return tuple(unshrink_arr(o, sst.shape, ocean_index) for o in out_data)
 
 
-def input_and_output_check(func):
-    @functools.wraps(func)
-    def wrapper(*args, **kwargs):
-        # Check the input shape
-        test_arg = args[
-            0
-        ]  # assuming that all the input shapes are the same size. TODO: More thorough check
-        if len(test_arg.dims) < 3:
-            # TODO promote using expand_dims?
-            raise NotImplementedError(
-                f"Aerobulk-Python expects all input fields as 3D arrays. Found {len(test_arg.dims)} dimensions on input."
-            )
-        if len(test_arg.dims) > 4:
-            # TODO iterate over extra dims? Or reshape?
-            raise NotImplementedError(
-                f"Aerobulk-Python expects all input fields as 3D arrays. Found {len(test_arg.dims)} dimensions on input."
-            )
-
-        out_vars = func(*args, **kwargs)
-
-        # TODO: Here we could 'un-reshape' or squeeze the output according to the logic above
-
-        if any(var.ndim != 3 for var in out_vars):
-            raise ValueError(
-                f"f2py returned result of unexpected shape. Got {[var.shape for var in out_vars]}"
-            )
-        return out_vars
-
-    return wrapper
-
-
-@input_and_output_check
 def noskin(
     sst, t_zt, hum_zt, u_zu, v_zu, slp=101000.0, algo="coare3p0", zt=2, zu=10, niter=6
 ):
@@ -295,7 +261,6 @@ def noskin(
     return out_vars
 
 
-@input_and_output_check
 def skin(
     sst,
     t_zt,
