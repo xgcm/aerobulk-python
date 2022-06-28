@@ -21,6 +21,12 @@ def create_data(
 
     def _arr(value, chunks, order):
         arr = np.full(shape, value, order=order)
+        # adds random noise scaled by a percentage of the value
+        randomize_factor = 0.001
+        randomize_range = value * randomize_factor
+        noise = np.random.rand(*shape) * randomize_range
+        arr = arr + noise
+        
         if land_mask:
             arr[
                 multi_indices[0], multi_indices[1], :
@@ -29,12 +35,6 @@ def create_data(
             arr = xr.DataArray(arr)
             if chunks:
                 arr = arr.chunk(chunks)
-
-        # adds random noise scaled by a percentage of the value
-        randomize_factor = 0.001
-        randomize_range = value * randomize_factor
-        noise = np.random.rand(*shape) * randomize_range
-        arr = arr + noise
         return arr
 
     sst = _arr(290.0, chunks, order)
