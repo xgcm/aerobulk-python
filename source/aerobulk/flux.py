@@ -42,11 +42,7 @@ def noskin_np(
     t_zt : numpy.array
         Absolute air temperature at height zt [K]
     hum_zt : numpy.array
-        air humidity at zt, can be given as:
-            - specific humidity                   [kg/kg]
-            - dew-point temperature                   [K]
-            - relative humidity                       [%]
-            => type should normally be recognized based on value range
+        air humidity at zt, given as specific humidity [kg/kg]
     u_zu : numpy.array
         zonal wind speed at zu                    [m/s]
     v_zu : numpy.array
@@ -117,11 +113,7 @@ def skin_np(
     t_zt : numpy.array
         Absolute air temperature at height zt [K]
     hum_zt : numpy.array
-        air humidity at zt, can be given as:
-            - specific humidity                   [kg/kg]
-            - dew-point temperature                   [K]
-            - relative humidity                       [%]
-            => type should normally be recognized based on value range
+        air humidity at zt, given as specific humidity [kg/kg]
     u_zu : numpy.array
         zonal wind speed at zu                    [m/s]
     v_zu : numpy.array
@@ -190,11 +182,7 @@ def noskin(
     t_zt : xarray.DataArray
         Absolute air temperature at height zt [K]
     hum_zt : xarray.DataArray
-        air humidity at zt, can be given as:
-            - specific humidity                   [kg/kg]
-            - dew-point temperature                   [K]
-            - relative humidity                       [%]
-            => type should normally be recognized based on value range
+        air humidity at zt, given as specific humidity [kg/kg]
     u_zu : xarray.DataArray
         zonal wind speed at zu                    [m/s]
     v_zu : xarray.DataArray
@@ -290,11 +278,7 @@ def skin(
     t_zt : xr.DataArray
         Absolute air temperature at height zt [K]
     hum_zt : xr.DataArray
-        air humidity at zt, can be given as:
-            - specific humidity                   [kg/kg]
-            - dew-point temperature                   [K]
-            - relative humidity                       [%]
-            => type should normally be recognized based on value range
+        air humidity at zt, given as specific humidity [kg/kg]
     u_zu : xr.DataArray
         zonal wind speed at zu                    [m/s]
     v_zu : xr.DataArray
