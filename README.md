@@ -11,7 +11,7 @@ These are the steps to install and develop the package locally
 
 1. Set up a development environment.
 ```
-mamba create -n aerobulk-python-dev python=3.9 numpy gfortran xarray pytest ipython
+mamba create -n aerobulk-python-dev python=3.9 dask numpy gfortran xarray pytest ipython
 conda activate aerobulk-python-dev
 ```
 
