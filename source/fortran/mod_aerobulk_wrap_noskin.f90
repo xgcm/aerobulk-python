@@ -31,12 +31,11 @@ CONTAINS
     !! All the variables that are set in INIT
     ctype_humidity = 'sh'
     l_use_skin_schemes = .FALSE.
-    DO n = 1, Nt
-       CALL AEROBULK_COMPUTE(n, calgo, zt, zu, sst(:, :, n), t_zt(:, :, n), &
-          &                  hum_zt(:, :, n), U_zu(:, :, n), V_zu(:, :, n), slp(:, :, n),  &
-          &                  QL(:, :, n), QH(:, :, n), Tau_x(:, :, n), Tau_y(:, :, n),     &
-          &                  Evp=Evap(:, :, n))
-    END DO
+
+    CALL AEROBULK_COMPUTE(n, calgo, zt, zu, sst(:, :, n), t_zt(:, :, n), &
+      &                  hum_zt(:, :, n), U_zu(:, :, n), V_zu(:, :, n), slp(:, :, n),  &
+      &                  QL(:, :, n), QH(:, :, n), Tau_x(:, :, n), Tau_y(:, :, n),     &
+      &                  Evp=Evap(:, :, n))
 
     CALL AEROBULK_BYE()
 

@@ -26,18 +26,17 @@ CONTAINS
     REAL(8), DIMENSION(Ni,Nj,Nt), INTENT(out) :: QL, QH, Tau_x, Tau_y, T_s, Evap
 
     INTEGER n
+
     nb_iter = Niter
     !! All the variables that are set in INIT
     ctype_humidity = 'sh'
     l_use_skin_schemes = .TRUE.
-    DO n = 1, Nt
-       CALL AEROBULK_COMPUTE(n, calgo, zt, zu, sst(:, :, n), t_zt(:, :, n), &
-          &                  hum_zt(:, :, n), U_zu(:, :, n), V_zu(:, :, n), slp(:, :, n),  &
-          &                  QL(:, :, n), QH(:, :, n), Tau_x(:, :, n), Tau_y(:, :, n),     &
-          &                  rad_sw=rad_sw(:, :, n), rad_lw=rad_lw(:, :, n), T_s=T_s(:, :, n), Evp=Evap(:, :, n))
-    END DO
 
-    CALL AEROBULK_BYE()
+    n=1 ! This will always be 1 since we shrink arrays to 1d
+    CALL AEROBULK_COMPUTE(1, calgo, zt, zu, sst(:, :, n), t_zt(:, :, n), &
+      &                  hum_zt(:, :, n), U_zu(:, :, n), V_zu(:, :, n), slp(:, :, n),  &
+      &                  QL(:, :, n), QH(:, :, n), Tau_x(:, :, n), Tau_y(:, :, n),     &
+      &                  rad_sw=rad_sw(:, :, n), rad_lw=rad_lw(:, :, n), T_s=T_s(:, :, n), Evp=Evap(:, :, n))
 
   END SUBROUTINE AEROBULK_MODEL_SKIN
 
