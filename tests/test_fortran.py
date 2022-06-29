@@ -40,7 +40,17 @@ def test_fortran_noskin(algo, expected):
     v_zu = np.atleast_3d(0)
     slp = np.atleast_3d(101000.0)  # Pa
     ql, qh, taux, tauy, evap = noskin_np(
-        sst, t_zt, hum_zt, u_zu, v_zu, slp, algo=algo, zt=2, zu=10, niter=10
+        sst,
+        t_zt,
+        hum_zt,
+        u_zu,
+        v_zu,
+        slp,
+        algo=algo,
+        zt=2,
+        zu=10,
+        niter=10,
+        input_range_check=True,
     )
     evap = evap * 3600 * 24  # convert to mm/day
 
@@ -108,13 +118,14 @@ def test_fortran_skin(algo, expected):
         hum_zt,
         u_zu,
         v_zu,
+        slp,
         rad_sw,
         rad_lw,
-        slp,
         algo=algo,
         zt=2,
         zu=10,
         niter=10,
+        input_range_check=True,
     )
     evap = evap * 3600 * 24  # convert to mm/day
     t_s = t_s - rt0

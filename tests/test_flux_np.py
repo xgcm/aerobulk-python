@@ -35,7 +35,7 @@ def test_land_mask(skin_correction, algo):
         use_xr=False,
         land_mask=True,
     )
-    out_data = func(*args, algo, 2, 10, 6)
+    out_data = func(*args, algo, 2, 10, 6, input_range_check=True)
 
     # Check the location of all NaNs is correct
     for o in out_data:
@@ -47,6 +47,63 @@ def test_land_mask(skin_correction, algo):
         if not np.isnan(out_data[0][index]):
             single_inputs = tuple(np.atleast_3d(i[index]) for i in args)
 
-            single_outputs = func(*single_inputs, algo, 2, 10, 6)
+            single_outputs = func(
+                *single_inputs, algo, 2, 10, 6, input_range_check=True
+            )
             for so, o in zip(single_outputs, out_data):
                 assert so == o[index]
+
+
+@pytest.mark.parametrize(
+    "varname",
+    [
+        "t_zt",
+        "hum_zt",
+        "u_zu",
+        "v_zu",
+        "slp",
+        "rad_sw",
+        "rad_lw",
+    ],
+)
+class Test_Range_Check:
+    def test_range_check_nan(self, varname):
+        shape = (1, 1)
+        args_noskin = create_data(shape, skin_correction=False, **{varname: np.nan})
+        args_skin = create_data(shape, skin_correction=True, **{varname: np.nan})
+        msg = f"Found nans in {varname} that do not align with nans in `sst`. Check that nans in all fields are matched."
+
+        if varname not in ["rad_sw", "rad_lw"]:  # Test these only for skin
+            with pytest.raises(ValueError, match=msg):
+                noskin_np(*args_noskin, "ecmwf", 2, 10, 6, input_range_check=True)
+
+        with pytest.raises(ValueError, match=msg):
+            skin_np(*args_skin, "ecmwf", 2, 10, 6, input_range_check=True)
+
+    def test_range_check_invalid(self, varname):
+        invalid_values = {
+            "sst": 200.0,
+            "t_zt": 100,
+            "hum_zt": 0.1,
+            "u_zu": 60,
+            "v_zu": 60,
+            "slp": 2000,
+            "rad_sw": -20,
+            "rad_lw": 4000,
+        }
+        shape = (1, 1)
+        args_noskin = create_data(
+            shape, skin_correction=False, **{varname: invalid_values[varname]}
+        )
+        args_skin = create_data(
+            shape, skin_correction=True, **{varname: invalid_values[varname]}
+        )
+        # I hate regex sooo much. If someone has a nice way to just test that the varname is in here and the error message contains 'range'
+        # that would be amazing. This is the best I could do...
+        msg = r"\b(?:out of the valid range)\b"
+        if varname not in ["rad_sw", "rad_lw"]:
+            with pytest.raises(ValueError, match=str(msg)):
+                noskin_np(*args_noskin, "ecmwf", 2, 10, 6, input_range_check=True)
+
+        with pytest.raises(ValueError, match=str(msg)):
+            skin_np(*args_skin, "ecmwf", 2, 10, 6, input_range_check=True)
