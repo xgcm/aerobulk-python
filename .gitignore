@@ -13,7 +13,7 @@ dist/
 source/fortran/*f2pywrappers*
 source/fortran/*.c
 source/aerobulk/aerobulk/
-mod_aerobulk_wrap.*.so
+mod_*.so
 
 # should we ignore submodules
 .DS_Store

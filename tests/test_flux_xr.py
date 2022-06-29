@@ -25,7 +25,7 @@ def test_algo_error_skin(algo):
 @pytest.mark.parametrize(
     "chunks", [{"dim_2": -1}, {"dim_0": 10}, {"dim_0": 1}, {"dim_2": 8}, {"dim_2": 1}]
 )
-@pytest.mark.parametrize("skin_correction", [True, False])
+@pytest.mark.parametrize("skin_correction", [False, True])
 class Test_xarray:
     def test_chunked(self, chunks, skin_correction):
         shape = (10, 13, 12)

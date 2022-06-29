@@ -25,21 +25,15 @@ CONTAINS
     INTEGER,                  INTENT(in) :: Niter
     REAL(8), DIMENSION(Ni,Nj,Nt), INTENT(out) :: QL, QH, Tau_x, Tau_y, Evap
 
-    INTEGER n
-
     nb_iter = Niter
+    !! All the variables that are set in INIT
+    ctype_humidity = 'sh'
+    l_use_skin_schemes = .FALSE.
 
-    !! initialize based on first timestep
-    CALL AEROBULK_INIT(Nt, calgo, sst(:, :, 1), t_zt(:, :, 1), &
-        &              hum_zt(:, :, 1), U_zu(:, :, 1), V_zu(:, :, 1), slp(:, :, 1), &
-        &              l_use_skin=.FALSE. )
-
-    DO n = 1, Nt
-       CALL AEROBULK_COMPUTE(n, calgo, zt, zu, sst(:, :, n), t_zt(:, :, n), &
-          &                  hum_zt(:, :, n), U_zu(:, :, n), V_zu(:, :, n), slp(:, :, n),  &
-          &                  QL(:, :, n), QH(:, :, n), Tau_x(:, :, n), Tau_y(:, :, n),     &
-          &                  Evp=Evap(:, :, n))
-    END DO
+    CALL AEROBULK_COMPUTE(1, calgo, zt, zu, sst(:, :, 1), t_zt(:, :, 1), &
+      &                  hum_zt(:, :, 1), U_zu(:, :, 1), V_zu(:, :, 1), slp(:, :, 1),  &
+      &                  QL(:, :, 1), QH(:, :, 1), Tau_x(:, :, 1), Tau_y(:, :, 1),     &
+      &                  Evp=Evap(:, :, 1))
 
     CALL AEROBULK_BYE()
 
