@@ -1,3 +1,5 @@
+import warnings
+
 import aerobulk.aerobulk.mod_aerobulk_wrap_noskin as aeronoskin
 import aerobulk.aerobulk.mod_aerobulk_wrap_skin as aeroskin
 import numpy as np
@@ -6,14 +8,14 @@ import xarray as xr
 VALID_ALGOS = ["coare3p0", "coare3p6", "ecmwf", "ncar", "andreas"]
 VALID_ALGOS_SKIN = ["coare3p0", "coare3p6", "ecmwf"]
 VALID_VALUE_RANGES = {
-    "sst": [270, 320, False],
-    "t_zt": [180, 330, False],
-    "hum_zt": [0, 0.08, False],
-    "u_zu": [0, 50, True],
-    "v_zu": [0, 50, True],
-    "slp": [80000, 110000, False],
-    "rad_sw": [0, 1500, False],
-    "rad_lw": [0, 750, False],
+    "sst": [270, 320],
+    "t_zt": [180, 330],
+    "hum_zt": [0, 0.08],
+    "u_zu": [-50, 50],
+    "v_zu": [-50, 50],
+    "slp": [80000, 110000],
+    "rad_sw": [0, 1500],
+    "rad_lw": [0, 750],
 }
 
 
@@ -31,24 +33,25 @@ def _check_value_range(*args):
             ["sst", "t_zt", "hum_zt", "u_zu", "v_zu", "slp", "rad_sw", "rad_lw"], args
         )
     }
+    performance_msg = (
+        "Checking for misaligned nans and values outside of the valid range is performed by default, but reduces performance. \n"
+        "If you are sure your data is valid you can deactivate these checks by setting `input_range_check=False`"
+    )
+    warnings.warn(performance_msg)
 
     for var, data in args_dict.items():
         # check for misaligned nans
         if var != "sst":
             if np.isnan(data).any():
                 raise ValueError(
-                    f"Found nans in {var} that do not align with nans in `sst`. Check that nans in all fields are matched."
+                    f"Found nans in {var} that do not align with nans in `sst`.\nCheck that nans in all fields are matched."
                 )
 
         # check for valid range
         range = VALID_VALUE_RANGES[var]
-        range_data = data
-        # check the absolute value if specified in range
-        if range[2]:
-            range_data = abs(range_data)
 
         # check that values are in range
-        out_of_range = ~np.logical_and(range_data >= range[0], range_data <= range[1])
+        out_of_range = ~np.logical_and(data >= range[0], data <= range[1])
         if out_of_range.any():
             raise ValueError(
                 f"Found values in {var} that are out of the valid range ({-range[0] if range[2] else range[0]}-{range[1]})."
