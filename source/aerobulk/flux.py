@@ -48,7 +48,7 @@ def _check_value_range(*args):
         out_of_range = ~np.logical_and(data >= range[0], data <= range[1])
         if out_of_range.any():
             raise ValueError(
-                f"Found values in {var} that are out of the valid range ({-range[0] if range[2] else range[0]}-{range[1]})."
+                f"Found values in {var} that are out of the valid range ({range[0]}-{range[1]})."
             )
 
 
