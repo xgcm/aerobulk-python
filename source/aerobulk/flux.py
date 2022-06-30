@@ -38,7 +38,7 @@ def _check_value_range(*args):
         if var != "sst":
             if np.isnan(data).any():
                 raise ValueError(
-                    f"Found nans in {var} that do not align with nans in `sst`.\nCheck that nans in all fields are matched."
+                    f"Found nans in {var} that do not align with nans in `sst`. Check that nans in all fields are matched."
                 )
 
         # check for valid range
