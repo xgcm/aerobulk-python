@@ -33,12 +33,6 @@ def _check_value_range(*args):
             ["sst", "t_zt", "hum_zt", "u_zu", "v_zu", "slp", "rad_sw", "rad_lw"], args
         )
     }
-    performance_msg = (
-        "Checking for misaligned nans and values outside of the valid range is performed by default, but reduces performance. \n"
-        "If you are sure your data is valid you can deactivate these checks by setting `input_range_check=False`"
-    )
-    warnings.warn(performance_msg)
-
     for var, data in args_dict.items():
         # check for misaligned nans
         if var != "sst":
@@ -278,6 +272,12 @@ def noskin(
     sst, t_zt, hum_zt, u_zu, v_zu, slp = xr.broadcast(
         sst, t_zt, hum_zt, u_zu, v_zu, slp
     )
+    if input_range_check:
+        performance_msg = (
+            "Checking for misaligned nans and values outside of the valid range is performed by default, but reduces performance. \n"
+            "If you are sure your data is valid you can deactivate these checks by setting `input_range_check=False`"
+        )
+        warnings.warn(performance_msg)
 
     out_vars = xr.apply_ufunc(
         noskin_np,
@@ -382,6 +382,13 @@ def skin(
     sst, t_zt, hum_zt, u_zu, v_zu, rad_sw, rad_lw, slp = xr.broadcast(
         sst, t_zt, hum_zt, u_zu, v_zu, rad_sw, rad_lw, slp
     )
+
+    if input_range_check:
+        performance_msg = (
+            "Checking for misaligned nans and values outside of the valid range is performed by default, but reduces performance. \n"
+            "If you are sure your data is valid you can deactivate these checks by setting `input_range_check=False`"
+        )
+        warnings.warn(performance_msg)
 
     out_vars = xr.apply_ufunc(
         skin_np,
