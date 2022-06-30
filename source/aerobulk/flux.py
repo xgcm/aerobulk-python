@@ -1,3 +1,5 @@
+import warnings
+
 import aerobulk.aerobulk.mod_aerobulk_wrap_noskin as aeronoskin
 import aerobulk.aerobulk.mod_aerobulk_wrap_skin as aeroskin
 import numpy as np
@@ -5,11 +7,49 @@ import xarray as xr
 
 VALID_ALGOS = ["coare3p0", "coare3p6", "ecmwf", "ncar", "andreas"]
 VALID_ALGOS_SKIN = ["coare3p0", "coare3p6", "ecmwf"]
+VALID_VALUE_RANGES = {
+    "sst": [270, 320],
+    "t_zt": [180, 330],
+    "hum_zt": [0, 0.08],
+    "u_zu": [-50, 50],
+    "v_zu": [-50, 50],
+    "slp": [80000, 110000],
+    "rad_sw": [0, 1500],
+    "rad_lw": [0, 750],
+}
 
 
 def _check_algo(algo, valids):
     if algo not in valids:
         raise ValueError(f"Algorithm {algo} not valid. Choose from {valids}.")
+
+
+def _check_value_range(*args):
+    """Checks the input ranges for input fields"""
+    # parse inputs to names
+    args_dict = {
+        k: v
+        for k, v in zip(
+            ["sst", "t_zt", "hum_zt", "u_zu", "v_zu", "slp", "rad_sw", "rad_lw"], args
+        )
+    }
+    for var, data in args_dict.items():
+        # check for misaligned nans
+        if var != "sst":
+            if np.isnan(data).any():
+                raise ValueError(
+                    f"Found nans in {var} that do not align with nans in `sst`. Check that nans in all fields are matched."
+                )
+
+        # check for valid range
+        range = VALID_VALUE_RANGES[var]
+
+        # check that values are in range
+        out_of_range = ~np.logical_and(data >= range[0], data <= range[1])
+        if out_of_range.any():
+            raise ValueError(
+                f"Found values in {var} that are out of the valid range ({range[0]}-{range[1]})."
+            )
 
 
 # Unshrink the data (i.e. put land NaN values back in their correct locations)
@@ -20,16 +60,7 @@ def unshrink_arr(shrunk_array, shape, ocean_index):
 
 
 def noskin_np(
-    sst,
-    t_zt,
-    hum_zt,
-    u_zu,
-    v_zu,
-    slp,
-    algo,
-    zt,
-    zu,
-    niter,
+    sst, t_zt, hum_zt, u_zu, v_zu, slp, algo, zt, zu, niter, input_range_check
 ):
     """Python wrapper for aerobulk without skin correction.
     !ATTENTION If input not provided in correct units, will crash.
@@ -81,6 +112,9 @@ def noskin_np(
         np.atleast_3d(a[ocean_index]) for a in (sst, t_zt, hum_zt, u_zu, v_zu, slp)
     )
 
+    if input_range_check:
+        _check_value_range(*args_shrunk)
+
     out_data = aeronoskin.mod_aerobulk_wrapper_noskin.aerobulk_model_noskin(
         algo, zt, zu, *args_shrunk, niter
     )
@@ -94,13 +128,14 @@ def skin_np(
     hum_zt,
     u_zu,
     v_zu,
+    slp,
     rad_sw,
     rad_lw,
-    slp,
     algo,
     zt,
     zu,
     niter,
+    input_range_check,
 ):
     """Python wrapper for aerobulk with skin correction.
     !ATTENTION If input not provided in correct units, will crash.
@@ -158,6 +193,9 @@ def skin_np(
         for a in (sst, t_zt, hum_zt, u_zu, v_zu, slp, rad_sw, rad_lw)
     )
 
+    if input_range_check:
+        _check_value_range(*args_shrunk)
+
     out_data = aeroskin.mod_aerobulk_wrapper_skin.aerobulk_model_skin(
         algo, zt, zu, *args_shrunk, niter
     )
@@ -166,7 +204,17 @@ def skin_np(
 
 
 def noskin(
-    sst, t_zt, hum_zt, u_zu, v_zu, slp=101000.0, algo="coare3p0", zt=2, zu=10, niter=6
+    sst,
+    t_zt,
+    hum_zt,
+    u_zu,
+    v_zu,
+    slp=101000.0,
+    algo="coare3p0",
+    zt=2,
+    zu=10,
+    niter=6,
+    input_range_check=True,
 ):
     """xarray wrapper for aerobulk without skin correction.
 
@@ -202,6 +250,9 @@ def noskin(
     niter : int, optional
         Number of iteration steps used in the algorithm,
         by default 6
+    input_range_check: bool, optional
+        Turn on/off explicit checking of input variables for valid ranges.
+        On by default, but for best performance should be turned off
 
     Returns
     -------
@@ -221,6 +272,12 @@ def noskin(
     sst, t_zt, hum_zt, u_zu, v_zu, slp = xr.broadcast(
         sst, t_zt, hum_zt, u_zu, v_zu, slp
     )
+    if input_range_check:
+        performance_msg = (
+            "Checking for misaligned nans and values outside of the valid range is performed by default, but reduces performance. \n"
+            "If you are sure your data is valid you can deactivate these checks by setting `input_range_check=False`"
+        )
+        warnings.warn(performance_msg)
 
     out_vars = xr.apply_ufunc(
         noskin_np,
@@ -234,10 +291,7 @@ def noskin(
         output_core_dims=[()] * 5,
         dask="parallelized",
         kwargs=dict(
-            algo=algo,
-            zt=zt,
-            zu=zu,
-            niter=niter,
+            algo=algo, zt=zt, zu=zu, niter=niter, input_range_check=input_range_check
         ),
         output_dtypes=[sst.dtype]
         * 5,  # deactivates the 1 element check which aerobulk does not like
@@ -262,6 +316,7 @@ def skin(
     zt=2,
     zu=10,
     niter=6,
+    input_range_check=True,
 ):
 
     """xarray wrapper for aerobulk with skin correction.
@@ -302,6 +357,9 @@ def skin(
     niter : int, optional
         Number of iteration steps used in the algorithm,
         by default 6
+    input_range_check: bool, optional
+        Turn on/off explicit checking of input variables for valid ranges.
+        On by default, but for best performance should be turned off
 
     Returns
     -------
@@ -325,6 +383,13 @@ def skin(
         sst, t_zt, hum_zt, u_zu, v_zu, rad_sw, rad_lw, slp
     )
 
+    if input_range_check:
+        performance_msg = (
+            "Checking for misaligned nans and values outside of the valid range is performed by default, but reduces performance. \n"
+            "If you are sure your data is valid you can deactivate these checks by setting `input_range_check=False`"
+        )
+        warnings.warn(performance_msg)
+
     out_vars = xr.apply_ufunc(
         skin_np,
         sst,
@@ -339,10 +404,7 @@ def skin(
         output_core_dims=[()] * 6,
         dask="parallelized",
         kwargs=dict(
-            algo=algo,
-            zt=zt,
-            zu=zu,
-            niter=niter,
+            algo=algo, zt=zt, zu=zu, niter=niter, input_range_check=input_range_check
         ),
         output_dtypes=[sst.dtype]
         * 6,  # deactivates the 1 element check which aerobulk does not like

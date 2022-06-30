@@ -12,6 +12,14 @@ def create_data(
     order: str = "F",
     use_xr=True,
     land_mask=False,
+    sst=290.0,
+    t_zt=280.0,
+    hum_zt=0.001,
+    u_zu=1.0,
+    v_zu=-1.0,
+    slp=101000.0,
+    rad_sw=0.000001,
+    rad_lw=350.0,
 ):
     size = shape[0] * shape[1]
     shape2d = (shape[0], shape[1])
@@ -37,15 +45,21 @@ def create_data(
                 arr = arr.chunk(chunks)
         return arr
 
-    sst = _arr(290.0, chunks, order)
-    t_zt = _arr(280.0, chunks, order)
-    hum_zt = _arr(0.001, chunks, order)
-    u_zu = _arr(1.0, chunks, order)
-    v_zu = _arr(-1.0, chunks, order)
-    slp = _arr(101000.0, chunks, order)
-    rad_sw = _arr(0.000001, chunks, order)
-    rad_lw = _arr(350.0, chunks, order)
     if skin_correction:
-        return sst, t_zt, hum_zt, u_zu, v_zu, rad_sw, rad_lw, slp
+        return tuple(
+            _arr(a, chunks, order)
+            for a in (
+                sst,
+                t_zt,
+                hum_zt,
+                u_zu,
+                v_zu,
+                slp,
+                rad_sw,
+                rad_lw,
+            )
+        )
     else:
-        return sst, t_zt, hum_zt, u_zu, v_zu, slp
+        return tuple(
+            _arr(a, chunks, order) for a in (sst, t_zt, hum_zt, u_zu, v_zu, slp)
+        )
