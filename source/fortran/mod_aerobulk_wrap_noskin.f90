@@ -35,8 +35,6 @@ CONTAINS
       &                  QL(:, :, 1), QH(:, :, 1), Tau_x(:, :, 1), Tau_y(:, :, 1),     &
       &                  Evp=Evap(:, :, 1))
 
-    CALL AEROBULK_BYE()
-
   END SUBROUTINE AEROBULK_MODEL_NOSKIN
 
 END MODULE mod_aerobulk_wrapper_noskin
