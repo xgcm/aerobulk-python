@@ -2,9 +2,11 @@ name: test_env_aerobulk_python
 channels:
  - conda-forge
 dependencies:
+  - codecov
   - dask
   - gfortran
   - numpy
   - pytest
+  - pytest-cov
   - python
   - xarray
