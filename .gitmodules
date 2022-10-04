@@ -1,3 +1,4 @@
 [submodule "source/fortran/aerobulk"]
 	path = source/fortran/aerobulk
-	url = git@github.com:brodeau/aerobulk.git
+	url = git@github.com:jbusecke/aerobulk.git
+	branch = patch-2
