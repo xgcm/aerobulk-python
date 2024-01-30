@@ -36,9 +36,9 @@ def create_data(
         arr = arr + noise
 
         if land_mask:
-            arr[
-                multi_indices[0], multi_indices[1], :
-            ] = np.nan  # add NaNs to mimic land mask
+            arr[multi_indices[0], multi_indices[1], :] = (
+                np.nan
+            )  # add NaNs to mimic land mask
         if use_xr:
             arr = xr.DataArray(arr)
             if chunks:
