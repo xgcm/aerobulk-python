@@ -4,6 +4,15 @@
 A python wrapper for aerobulk (https://github.com/brodeau/aerobulk)
 
 ## Installation
+Due to the heavy dependencies in this package we recommend installing the package from conda-forge with mamba/conda
+
+```
+mamba install -c conda-forge aerobulk-python
+```
+or
+```
+conda install -c conda-forge aerobulk-python
+```
 
 ## aerobulk-python developer guide
 
