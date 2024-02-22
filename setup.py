@@ -104,7 +104,7 @@ setup(
         "Programming Language :: Python :: 3.11",
     ],
     install_requires=install_requires,
-    python_requires=">=3.8, <3.12"
+    python_requires=">=3.8, <3.12",
     # long_description=long_description,
     # long_description_content_type="text/x-rst",
     setup_requires="setuptools_scm",
