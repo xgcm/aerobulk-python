@@ -1,4 +1,6 @@
 [![pre-commit.ci status](https://results.pre-commit.ci/badge/github/xgcm/aerobulk-python/main.svg)](https://results.pre-commit.ci/latest/github/xgcm/aerobulk-python/main)
+[![DOI](https://zenodo.org/badge/481218255.svg)](https://zenodo.org/doi/10.5281/zenodo.11205090)
+
 
 # aerobulk-python
 A python wrapper for aerobulk (https://github.com/brodeau/aerobulk)
