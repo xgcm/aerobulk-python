@@ -309,9 +309,9 @@ def skin(
     hum_zt,
     u_zu,
     v_zu,
-    rad_sw,
-    rad_lw,
     slp=101000.0,
+    rad_sw=None,
+    rad_lw=None,
     algo="coare3p0",
     zt=2,
     zu=10,
@@ -378,8 +378,13 @@ def skin(
 
     _check_algo(algo, VALID_ALGOS_SKIN)
 
-    sst, t_zt, hum_zt, u_zu, v_zu, rad_sw, rad_lw, slp = xr.broadcast(
-        sst, t_zt, hum_zt, u_zu, v_zu, rad_sw, rad_lw, slp
+    if rad_sw is None:
+        raise ValueError("rad_sw is required and cannot be None")
+    if rad_lw is None:
+        raise ValueError("rad_lw is required and cannot be None")
+
+    sst, t_zt, hum_zt, u_zu, v_zu, slp, rad_sw, rad_lw = xr.broadcast(
+        sst, t_zt, hum_zt, u_zu, v_zu, slp, rad_sw, rad_lw
     )
 
     if input_range_check:
@@ -396,9 +401,9 @@ def skin(
         hum_zt,
         u_zu,
         v_zu,
+        slp,
         rad_sw,
         rad_lw,
-        slp,
         input_core_dims=[()] * 8,
         output_core_dims=[()] * 6,
         dask="parallelized",
