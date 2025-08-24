@@ -1,45 +1,42 @@
-name: Upload Python Package
-
+name: Build and Upload aerobulk-python to PyPI
 on:
+  push:
+    branches:
+      - "main"
+  pull_request:
+    branches:
+      - "*"
   release:
-    types: [created]
+    types:
+      - published
 
 jobs:
-  deploy:
-    if: github.repository == 'xgcm/aerobulk-python'
+  build-artifacts:
     runs-on: ubuntu-latest
+    if: github.repository == 'xgcm/aerobulk-python'
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
-          submodules: recursive
+          fetch-depth: 0
       - name: Set up Python
-        uses: actions/setup-python@v3
+        uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: "3.11"
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install numpy setuptools setuptools-scm wheel twine
-      - name: Build tarball
-        run: python setup.py sdist
-      - name: Check dist
-        run: ls -la dist
-      - name: Check version
-        run: python setup.py --version
-      - name: Check built artifacts
+          python -m pip install --upgrade setuptools setuptools-scm build twine numpy
+      - name: Build only
+        if: github.event_name != 'release'
         run: |
-          python -m twine check dist/*
-          pwd
-          if [ -f dist/aerobulk-python-0.0.0.tar.gz ]; then
-            echo "❌ INVALID VERSION NUMBER"
-            exit 1
-          else
-            echo "✅ Looks good"
-          fi
-      - name: Publish a Package to PyPI
-        uses: pypa/gh-action-pypi-publish@v1.5.0
-        with:
-          user: __token__
-          password: ${{ secrets.PYPI_API_TOKEN }}
-          verbose: true
-          verify_metadata: true
+          python -m build
+          twine check dist/*
+      - name: Build and publish
+        if: github.event_name == 'release'
+        env:
+          TWINE_USERNAME: "__token__"
+          TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
+        run: |
+          python -m build
+          twine check dist/*
+          twine upload dist/*

@@ -1,0 +1,68 @@
+[build-system]
+requires = [
+    "setuptools >= 61.0",
+    "setuptools-scm[toml] >= 6.2",
+    "wheel",
+    "numpy >= 1.20.0"
+]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "aerobulk-python"
+description = "General Circulation Model Postprocessing with xarray"
+readme = "README.md"
+license = {text = "GPLv3"}
+authors = [
+    {name = "aerobulk-python Developers", email = "julius@ldeo.columbia.edu"}
+]
+classifiers = [
+    "Development Status :: 2 - Pre-Alpha",
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering",
+    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+]
+requires-python = ">=3.8,<3.12"
+dependencies = [
+    "numpy",
+]
+dynamic = ["version"]
+
+[project.urls]
+Homepage = "https://github.com/xgcm/aerobulk-python"
+Repository = "https://github.com/xgcm/aerobulk-python"
+
+[tool.setuptools]
+package-dir = {"" = "source"}
+
+[tool.setuptools.packages.find]
+where = ["source"]
+
+[tool.setuptools_scm]
+write_to = "source/aerobulk/_version.py"
+write_to_template = '__version__ = "{version}"'
+tag_regex = '^(?P<prefix>v)?(?P<version>[^\+]+)(?P<suffix>.*)?$'
+
+# Tool configurations from setup.cfg
+[tool.flake8]
+exclude = ["**__init__.py", ".eggs", "doc"]
+ignore = [
+    # whitespace before ':' - doesn't work well with black
+    "E203",
+    "E402",
+    # line too long - let black worry about that
+    "E501",
+    # do not assign a lambda expression, use a def
+    "E731",
+    # line break before binary operator
+    "W503",
+    "E265",
+    "F811"
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
