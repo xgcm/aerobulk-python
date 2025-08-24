@@ -1,4 +1,5 @@
 import os
+
 import numpy.distutils.command.sdist  # noqa
 import setuptools  # noqa
 from numpy.distutils.core import Extension, setup
